@@ -6,6 +6,7 @@
 <title>UPSC MCQ Kingdom — Master Every Subject</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Crimson+Pro:wght@400;600&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root {
     --bg: #07090f;
@@ -44,7 +45,62 @@
   }
   .nav-logo { font-family: 'Cinzel', serif; font-size: 18px; color: var(--gold); letter-spacing: 1px; }
   .nav-logo span { color: var(--green); }
+  .nav-right { display: flex; align-items: center; gap: 10px; }
   .nav-badge { background: #16a34a22; border: 1px solid #16a34a55; color: var(--green); font-size: 11px; padding: 4px 12px; border-radius: 20px; letter-spacing: 1px; }
+
+  /* Sign In / User button */
+  .nav-auth-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: linear-gradient(135deg, #16a34a, #15803d);
+    border: none; border-radius: 20px;
+    padding: 6px 16px; cursor: pointer;
+    color: #fff; font-size: 12px; font-weight: 700;
+    font-family: 'DM Sans', sans-serif;
+    letter-spacing: 0.5px;
+    transition: all 0.25s;
+    text-decoration: none;
+  }
+  .nav-auth-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 16px #22c55e33; }
+
+  /* Logged-in user pill */
+  .nav-user-pill {
+    display: none; /* shown via JS */
+    align-items: center; gap: 8px;
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 20px; padding: 4px 14px 4px 4px;
+    cursor: pointer; position: relative;
+  }
+  .nav-user-pill.visible { display: inline-flex; }
+  .nav-avatar {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--green), var(--gold));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 900; color: var(--bg);
+    font-family: 'Cinzel', serif;
+  }
+  .nav-user-name { color: var(--text); font-size: 12px; font-weight: 600; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  /* User dropdown */
+  .user-dropdown {
+    display: none; position: absolute; top: 44px; right: 0;
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 14px; padding: 8px 0; min-width: 180px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+    z-index: 200;
+  }
+  .user-dropdown.open { display: block; }
+  .user-dropdown .dd-email {
+    padding: 10px 16px 8px; color: var(--muted); font-size: 11px;
+    border-bottom: 1px solid var(--border); letter-spacing: 0.5px;
+  }
+  .user-dropdown .dd-item {
+    display: block; width: 100%; padding: 10px 16px;
+    background: none; border: none; color: var(--text);
+    font-size: 13px; font-family: 'DM Sans', sans-serif;
+    cursor: pointer; text-align: left; transition: background 0.15s;
+  }
+  .user-dropdown .dd-item:hover { background: #1e293b; }
+  .user-dropdown .dd-item.danger { color: #f87171; }
 
   /* === HERO === */
   .hero {
@@ -151,7 +207,7 @@
   .card-count { font-size:11px; color:var(--muted); }
 
   /* LOCKED CARD */
-  .card.locked { cursor:default; opacity:0.55; }
+  .card.locked { cursor:pointer; opacity:0.55; }
   .card.locked:hover { transform:none; border-color:var(--border); box-shadow:none; }
   .card.locked::before { display:none; }
   .lock-tag {
@@ -263,9 +319,36 @@
   }
   .scroll-top:hover { transform:scale(1.1); background:#22c55e; }
 
+  /* === LOGIN TOAST === */
+  .login-toast {
+    display: none; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+    z-index: 300;
+    background: linear-gradient(135deg, #0d2010, #0d1520);
+    border: 1.5px solid var(--green);
+    border-radius: 16px; padding: 14px 22px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+    text-align: center; max-width: 340px; width: 90%;
+    animation: toastIn 0.35s ease;
+  }
+  .login-toast.show { display: block; }
+  @keyframes toastIn { from{opacity:0;transform:translateX(-50%) translateY(20px);} to{opacity:1;transform:translateX(-50%) translateY(0);} }
+  .toast-text { color: var(--text); font-size: 14px; margin-bottom: 12px; line-height: 1.5; }
+  .toast-text strong { color: var(--gold); }
+  .toast-actions { display: flex; gap: 8px; justify-content: center; }
+  .toast-btn {
+    padding: 8px 18px; border-radius: 10px; font-size: 13px;
+    font-family: 'DM Sans', sans-serif; font-weight: 600;
+    cursor: pointer; border: none; transition: all 0.2s;
+  }
+  .toast-btn.primary { background: var(--green2); color: #fff; }
+  .toast-btn.primary:hover { background: var(--green); }
+  .toast-btn.ghost { background: transparent; border: 1px solid var(--border); color: var(--muted); }
+  .toast-btn.ghost:hover { border-color: var(--gold); color: var(--gold); }
+
   @media(max-width:400px) {
     .grid { grid-template-columns: repeat(2, 1fr); }
     .hero { padding:40px 16px 30px; }
+    .nav-badge { display: none; }
   }
 </style>
 </head>
@@ -282,7 +365,25 @@
 <!-- NAV -->
 <nav>
   <div class="nav-logo">UPSC <span>MCQ</span> Kingdom</div>
-  <div class="nav-badge">🏆 Free Forever</div>
+  <div class="nav-right">
+    <div class="nav-badge">🏆 Free Forever</div>
+
+    <!-- Sign In button (shown when logged out) -->
+    <a class="nav-auth-btn" id="signInBtn" href="login.html">🔐 Sign In</a>
+
+    <!-- User pill (shown when logged in) -->
+    <div class="nav-user-pill" id="userPill" onclick="toggleDropdown()">
+      <div class="nav-avatar" id="navAvatar">?</div>
+      <div class="nav-user-name" id="navUserName">User</div>
+
+      <!-- Dropdown -->
+      <div class="user-dropdown" id="userDropdown">
+        <div class="dd-email" id="ddEmail">user@email.com</div>
+        <button class="dd-item" onclick="window.location.href='login.html'">👤 My Profile</button>
+        <button class="dd-item danger" onclick="logoutUser()">🚪 Sign Out</button>
+      </div>
+    </div>
+  </div>
 </nav>
 
 <!-- HERO -->
@@ -308,6 +409,15 @@
   </div>
 </div>
 
+<!-- LOGIN TOAST (popup when non-logged-in user clicks a card) -->
+<div class="login-toast" id="loginToast">
+  <div class="toast-text">👑 <strong>Sign in</strong> to track your progress and save scores!</div>
+  <div class="toast-actions">
+    <button class="toast-btn primary" onclick="window.location.href='login.html'">Sign In</button>
+    <button class="toast-btn ghost" onclick="skipLogin()">Skip for now</button>
+  </div>
+</div>
+
 <!-- MAIN CONTENT -->
 <div style="position:relative;z-index:1;">
 <div style="max-width:900px;margin:0 auto;padding:0 16px;">
@@ -324,7 +434,7 @@
   </div>
 
   <!-- FEATURED: ANIMAL GK -->
-  <a class="featured-card" href="GK/animalgk.html">
+  <a class="featured-card" href="GK/animalgk.html" onclick="return handleCardClick(this)">
     <div class="featured-tag">✅ LIVE NOW</div>
     <div class="featured-title">🦁 Animal General Knowledge</div>
     <div class="featured-sub">205 questions covering fastest, largest, national animals, Indian wildlife, marine life, birds, insects, behavior, body & biology and more.</div>
@@ -344,42 +454,42 @@
   <div class="sec-head"><div class="sec-line"></div><div class="sec-title">⚔️ History</div><div class="sec-line"></div></div>
   <div class="grid" id="gridHistory">
 
-    <div class="card locked c-amber" data-name="ancient history">
+    <div class="card locked c-amber" data-name="ancient history" onclick="handleLockedClick()">
       <div class="lock-tag">Soon</div>
       <span class="card-icon">🏛️</span>
       <div class="card-title">Ancient History</div>
       <div class="card-count">Harappa · Vedic · Maurya · Gupta</div>
     </div>
 
-    <div class="card locked c-amber" data-name="medieval history">
+    <div class="card locked c-amber" data-name="medieval history" onclick="handleLockedClick()">
       <div class="lock-tag">Soon</div>
       <span class="card-icon">🕌</span>
       <div class="card-title">Medieval History</div>
       <div class="card-count">Sultanate · Mughal · Vijayanagara</div>
     </div>
 
-    <div class="card locked c-amber" data-name="modern history">
+    <div class="card locked c-amber" data-name="modern history" onclick="handleLockedClick()">
       <div class="lock-tag">Soon</div>
       <span class="card-icon">🇬🇧</span>
       <div class="card-title">Modern History</div>
       <div class="card-count">British · Freedom Struggle · 1857</div>
     </div>
 
-    <div class="card locked c-amber" data-name="post independence india">
+    <div class="card locked c-amber" data-name="post independence india" onclick="handleLockedClick()">
       <div class="lock-tag">Soon</div>
       <span class="card-icon">🇮🇳</span>
       <div class="card-title">Post Independence</div>
       <div class="card-count">1947 onwards · Nehru · Emergency</div>
     </div>
 
-    <div class="card locked c-orange" data-name="world history">
+    <div class="card locked c-orange" data-name="world history" onclick="handleLockedClick()">
       <div class="lock-tag">Soon</div>
       <span class="card-icon">🌍</span>
       <div class="card-title">World History</div>
       <div class="card-count">WW1 · WW2 · Cold War · Revolution</div>
     </div>
 
-    <div class="card locked c-red" data-name="art culture india">
+    <div class="card locked c-red" data-name="art culture india" onclick="handleLockedClick()">
       <div class="lock-tag">Soon</div>
       <span class="card-icon">🎨</span>
       <div class="card-title">Art & Culture</div>
@@ -394,28 +504,28 @@
   <div class="sec-head"><div class="sec-line"></div><div class="sec-title">🗺️ Geography</div><div class="sec-line"></div></div>
   <div class="grid">
 
-    <div class="card locked c-blue" data-name="indian geography">
+    <div class="card locked c-blue" data-name="indian geography" onclick="handleLockedClick()">
       <div class="lock-tag">Soon</div>
       <span class="card-icon">🏔️</span>
       <div class="card-title">Indian Geography</div>
       <div class="card-count">Rivers · Mountains · Soil · Climate</div>
     </div>
 
-    <div class="card locked c-cyan" data-name="world geography">
+    <div class="card locked c-cyan" data-name="world geography" onclick="handleLockedClick()">
       <div class="lock-tag">Soon</div>
       <span class="card-icon">🌐</span>
       <div class="card-title">World Geography</div>
       <div class="card-count">Continents · Oceans · Countries</div>
     </div>
 
-    <div class="card locked c-teal" data-name="environment ecology">
+    <div class="card locked c-teal" data-name="environment ecology" onclick="handleLockedClick()">
       <div class="lock-tag">Soon</div>
       <span class="card-icon">🌿</span>
       <div class="card-title">Environment & Ecology</div>
       <div class="card-count">Biodiversity · Climate · IUCN</div>
     </div>
 
-    <div class="card locked c-green" data-name="physical geography">
+    <div class="card locked c-green" data-name="physical geography" onclick="handleLockedClick()">
       <div class="lock-tag">Soon</div>
       <span class="card-icon">⛰️</span>
       <div class="card-title">Physical Geography</div>
@@ -430,28 +540,28 @@
   <div class="sec-head"><div class="sec-line"></div><div class="sec-title">⚖️ Polity & Economy</div><div class="sec-line"></div></div>
   <div class="grid">
 
-    <div class="card locked c-indigo" data-name="polity constitution">
+    <div class="card locked c-indigo" data-name="polity constitution" onclick="handleLockedClick()">
       <div class="lock-tag">Soon</div>
       <span class="card-icon">📜</span>
       <div class="card-title">Polity & Constitution</div>
       <div class="card-count">Articles · Amendments · Rights</div>
     </div>
 
-    <div class="card locked c-purple" data-name="economy">
+    <div class="card locked c-purple" data-name="economy" onclick="handleLockedClick()">
       <div class="lock-tag">Soon</div>
       <span class="card-icon">💹</span>
       <div class="card-title">Economy</div>
       <div class="card-count">GDP · Banking · Budget · RBI</div>
     </div>
 
-    <div class="card locked c-indigo" data-name="governance">
+    <div class="card locked c-indigo" data-name="governance" onclick="handleLockedClick()">
       <div class="lock-tag">Soon</div>
       <span class="card-icon">🏛️</span>
       <div class="card-title">Governance</div>
       <div class="card-count">Parliament · Judiciary · Schemes</div>
     </div>
 
-    <div class="card locked c-purple" data-name="international relations">
+    <div class="card locked c-purple" data-name="international relations" onclick="handleLockedClick()">
       <div class="lock-tag">Soon</div>
       <span class="card-icon">🤝</span>
       <div class="card-title">International Relations</div>
@@ -466,28 +576,28 @@
   <div class="sec-head"><div class="sec-line"></div><div class="sec-title">🔬 Science & Technology</div><div class="sec-line"></div></div>
   <div class="grid">
 
-    <div class="card locked c-cyan" data-name="science technology">
+    <div class="card locked c-cyan" data-name="science technology" onclick="handleLockedClick()">
       <div class="lock-tag">Soon</div>
       <span class="card-icon">🚀</span>
       <div class="card-title">Science & Technology</div>
       <div class="card-count">Space · Defence · AI · Biotech</div>
     </div>
 
-    <div class="card locked c-blue" data-name="physics chemistry biology">
+    <div class="card locked c-blue" data-name="physics chemistry biology" onclick="handleLockedClick()">
       <div class="lock-tag">Soon</div>
       <span class="card-icon">⚗️</span>
       <div class="card-title">General Science</div>
       <div class="card-count">Physics · Chemistry · Biology</div>
     </div>
 
-    <div class="card locked c-teal" data-name="computer it technology">
+    <div class="card locked c-teal" data-name="computer it technology" onclick="handleLockedClick()">
       <div class="lock-tag">Soon</div>
       <span class="card-icon">💻</span>
       <div class="card-title">Computers & IT</div>
       <div class="card-count">Internet · Coding · Cybersecurity</div>
     </div>
 
-    <div class="card locked c-green" data-name="space isro nasa">
+    <div class="card locked c-green" data-name="space isro nasa" onclick="handleLockedClick()">
       <div class="lock-tag">Soon</div>
       <span class="card-icon">🛸</span>
       <div class="card-title">Space & ISRO</div>
@@ -502,21 +612,21 @@
   <div class="sec-head"><div class="sec-line"></div><div class="sec-title">🧮 CSAT & Aptitude</div><div class="sec-line"></div></div>
   <div class="grid">
 
-    <div class="card locked c-pink" data-name="csat aptitude">
+    <div class="card locked c-pink" data-name="csat aptitude" onclick="handleLockedClick()">
       <div class="lock-tag">Soon</div>
       <span class="card-icon">🧮</span>
       <div class="card-title">CSAT — Aptitude</div>
       <div class="card-count">Maths · Reasoning · Comprehension</div>
     </div>
 
-    <div class="card locked c-pink" data-name="logical reasoning">
+    <div class="card locked c-pink" data-name="logical reasoning" onclick="handleLockedClick()">
       <div class="lock-tag">Soon</div>
       <span class="card-icon">🧩</span>
       <div class="card-title">Logical Reasoning</div>
       <div class="card-count">Syllogism · Puzzles · Series</div>
     </div>
 
-    <div class="card locked c-red" data-name="data interpretation">
+    <div class="card locked c-red" data-name="data interpretation" onclick="handleLockedClick()">
       <div class="lock-tag">Soon</div>
       <span class="card-icon">📊</span>
       <div class="card-title">Data Interpretation</div>
@@ -532,84 +642,84 @@
   <div class="grid">
 
     <!-- LIVE ANIMAL GK CARD in GK section too -->
-    <a class="card live c-green" href="GK/animalgk.html" data-name="animal gk wildlife">
+    <a class="card live c-green" href="GK/animalgk.html" data-name="animal gk wildlife" onclick="return handleCardClick(this)">
       <div class="live-tag">LIVE</div>
       <span class="card-icon">🦁</span>
       <div class="card-title">Animal GK</div>
       <div class="card-count">205 Questions · 15 Topics</div>
     </a>
 
-    <div class="card locked c-blue" data-name="india gk general knowledge">
+    <div class="card locked c-blue" data-name="india gk general knowledge" onclick="handleLockedClick()">
       <div class="lock-tag">Soon</div>
       <span class="card-icon">🇮🇳</span>
       <div class="card-title">India GK</div>
       <div class="card-count">States · Capitals · Records</div>
     </div>
 
-    <div class="card locked c-cyan" data-name="world gk general knowledge">
+    <div class="card locked c-cyan" data-name="world gk general knowledge" onclick="handleLockedClick()">
       <div class="lock-tag">Soon</div>
       <span class="card-icon">🌍</span>
       <div class="card-title">World GK</div>
       <div class="card-count">Countries · Capitals · Leaders</div>
     </div>
 
-    <div class="card locked c-amber" data-name="common general knowledge">
+    <div class="card locked c-amber" data-name="common general knowledge" onclick="handleLockedClick()">
       <div class="lock-tag">Soon</div>
       <span class="card-icon">📚</span>
       <div class="card-title">Common GK</div>
       <div class="card-count">Mixed · All Categories · Basics</div>
     </div>
 
-    <div class="card locked c-orange" data-name="sports gk cricket football">
+    <div class="card locked c-orange" data-name="sports gk cricket football" onclick="handleLockedClick()">
       <div class="lock-tag">Soon</div>
       <span class="card-icon">🏏</span>
       <div class="card-title">Sports GK</div>
       <div class="card-count">Cricket · Olympics · Awards</div>
     </div>
 
-    <div class="card locked c-purple" data-name="current affairs 2024 2025">
+    <div class="card locked c-purple" data-name="current affairs 2024 2025" onclick="handleLockedClick()">
       <div class="lock-tag">Soon</div>
       <span class="card-icon">📰</span>
       <div class="card-title">Current Affairs</div>
       <div class="card-count">Monthly · Weekly · Events</div>
     </div>
 
-    <div class="card locked c-pink" data-name="awards honours nobel">
+    <div class="card locked c-pink" data-name="awards honours nobel" onclick="handleLockedClick()">
       <div class="lock-tag">Soon</div>
       <span class="card-icon">🏆</span>
       <div class="card-title">Awards & Honours</div>
       <div class="card-count">Nobel · Padma · Bharat Ratna</div>
     </div>
 
-    <div class="card locked c-teal" data-name="books authors literature">
+    <div class="card locked c-teal" data-name="books authors literature" onclick="handleLockedClick()">
       <div class="lock-tag">Soon</div>
       <span class="card-icon">📖</span>
       <div class="card-title">Books & Authors</div>
       <div class="card-count">Famous Books · Indian Authors</div>
     </div>
 
-    <div class="card locked c-indigo" data-name="government schemes india">
+    <div class="card locked c-indigo" data-name="government schemes india" onclick="handleLockedClick()">
       <div class="lock-tag">Soon</div>
       <span class="card-icon">📋</span>
       <div class="card-title">Govt. Schemes</div>
       <div class="card-count">Yojana · Missions · Programmes</div>
     </div>
 
-    <div class="card locked c-red" data-name="defence military india">
+    <div class="card locked c-red" data-name="defence military india" onclick="handleLockedClick()">
       <div class="lock-tag">Soon</div>
       <span class="card-icon">🪖</span>
       <div class="card-title">Defence & Military</div>
       <div class="card-count">Army · Navy · Air Force · DRDO</div>
     </div>
 
-    <div class="card locked c-green" data-name="static gk facts">
+    <div class="card locked c-green" data-name="static gk facts" onclick="handleLockedClick()">
       <div class="lock-tag">Soon</div>
       <span class="card-icon">🗃️</span>
       <div class="card-title">Static GK</div>
       <div class="card-count">Firsts · Largest · Borders</div>
     </div>
 
-    <div class="card locked c-amber" data-name="miscellaneous gk mixed">
+    <div class="card locked c-amber" data-name="miscellaneous gk mixed" onclick="handleLockedClick()">
       <div class="lock-tag">Soon</div>
       <span class="card-icon">🎯</span>
       <div class="card-title">Miscellaneous</div>
@@ -646,10 +756,150 @@
 <button class="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
 
 <script>
+  // ========================
+  // SUPABASE AUTH
+  // ========================
+  const SUPABASE_URL = 'https://aazlyizztnxdumvvgyfa.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFhemx5aXp6dG54ZHVtdnZneWZhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzOTI2OTIsImV4cCI6MjA5MDk2ODY5Mn0.U0cNWpOTtb4DulRqqPmfEZ4oYkj2QhL2087n3TCuxmw';
+
+  const { createClient } = supabase;
+  const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  let isLoggedIn = false;
+  let currentUser = null;
+  let loginSkipped = sessionStorage.getItem('loginSkipped') === 'true';
+  let pendingRedirect = null;
+  let toastTimeout = null;
+
+  // Check session on load
+  async function checkAuth() {
+    try {
+      const { data: { session } } = await sb.auth.getSession();
+      if (session) {
+        isLoggedIn = true;
+        currentUser = session.user;
+        updateNavForUser(session.user);
+      }
+    } catch (e) {
+      console.log('Auth check failed:', e);
+    }
+  }
+  checkAuth();
+
+  // Listen for auth changes
+  sb.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_IN' && session) {
+      isLoggedIn = true;
+      currentUser = session.user;
+      updateNavForUser(session.user);
+    } else if (event === 'SIGNED_OUT') {
+      isLoggedIn = false;
+      currentUser = null;
+      updateNavForLoggedOut();
+    }
+  });
+
+  // ========================
+  // NAV UI UPDATES
+  // ========================
+  function updateNavForUser(user) {
+    const email = user.email || '';
+    const initial = email.charAt(0).toUpperCase();
+    const name = email.split('@')[0];
+
+    document.getElementById('signInBtn').style.display = 'none';
+    document.getElementById('userPill').classList.add('visible');
+    document.getElementById('navAvatar').textContent = initial;
+    document.getElementById('navUserName').textContent = name;
+    document.getElementById('ddEmail').textContent = email;
+  }
+
+  function updateNavForLoggedOut() {
+    document.getElementById('signInBtn').style.display = 'inline-flex';
+    document.getElementById('userPill').classList.remove('visible');
+  }
+
+  // Dropdown toggle
+  function toggleDropdown() {
+    const dd = document.getElementById('userDropdown');
+    dd.classList.toggle('open');
+  }
+
+  // Close dropdown when clicking outside
+  document.addEventListener('click', (e) => {
+    const pill = document.getElementById('userPill');
+    const dd = document.getElementById('userDropdown');
+    if (!pill.contains(e.target)) {
+      dd.classList.remove('open');
+    }
+  });
+
+  // Logout
+  async function logoutUser() {
+    await sb.auth.signOut();
+    sessionStorage.removeItem('loginSkipped');
+    loginSkipped = false;
+    window.location.reload();
+  }
+
+  // ========================
+  // CARD CLICK HANDLING
+  // ========================
+
+  // For LIVE cards (like Animal GK) — check login, show toast if not logged in
+  function handleCardClick(el) {
+    if (isLoggedIn || loginSkipped) {
+      return true; // allow normal navigation
+    }
+
+    // Store where user wanted to go
+    pendingRedirect = el.getAttribute('href');
+
+    // Show login toast
+    showLoginToast();
+    return false; // prevent navigation
+  }
+
+  // For LOCKED "Coming Soon" cards
+  function handleLockedClick() {
+    if (!isLoggedIn && !loginSkipped) {
+      showLoginToast();
+    }
+    // Cards are locked anyway, so no navigation happens
+  }
+
+  // ========================
+  // LOGIN TOAST
+  // ========================
+  function showLoginToast() {
+    const toast = document.getElementById('loginToast');
+    toast.classList.add('show');
+
+    // Auto-hide after 8 seconds
+    clearTimeout(toastTimeout);
+    toastTimeout = setTimeout(() => {
+      toast.classList.remove('show');
+    }, 8000);
+  }
+
+  function skipLogin() {
+    sessionStorage.setItem('loginSkipped', 'true');
+    loginSkipped = true;
+    document.getElementById('loginToast').classList.remove('show');
+
+    // If user was trying to go somewhere, navigate there now
+    if (pendingRedirect) {
+      window.location.href = pendingRedirect;
+      pendingRedirect = null;
+    }
+  }
+
+  // ========================
+  // SEARCH / FILTER
+  // ========================
   function filterCards() {
     const raw = document.getElementById('searchInput').value.toLowerCase().trim();
 
-    // Show everything if empty
     if (!raw) {
       document.querySelectorAll('.card[data-name]').forEach(c => c.style.display = '');
       document.querySelectorAll('.featured-card').forEach(c => c.style.display = '');
@@ -658,20 +908,17 @@
       return;
     }
 
-    const terms = raw.split(' ').filter(Boolean); // support multi-word
+    const terms = raw.split(' ').filter(Boolean);
 
-    // Helper: does text match ALL terms (prefix or contains)
     function matches(text) {
       return terms.every(term => {
         const words = text.split(/[\s\-·]+/);
-        // prefix match on any word in the text
         return words.some(w => w.startsWith(term)) || text.includes(term);
       });
     }
 
     let anyVisible = false;
 
-    // Filter regular cards
     document.querySelectorAll('.card[data-name]').forEach(card => {
       const name  = card.getAttribute('data-name').toLowerCase();
       const title = (card.querySelector('.card-title')?.textContent || '').toLowerCase();
@@ -682,7 +929,6 @@
       if (show) anyVisible = true;
     });
 
-    // Filter featured card
     document.querySelectorAll('.featured-card').forEach(fc => {
       const title = (fc.querySelector('.featured-title')?.textContent || '').toLowerCase();
       const sub   = (fc.querySelector('.featured-sub')?.textContent || '').toLowerCase();
@@ -690,14 +936,12 @@
       fc.style.display = matches(combined) ? '' : 'none';
     });
 
-    // Hide sections that have NO visible cards
     document.querySelectorAll('.section').forEach(section => {
       const visibleCards = [...section.querySelectorAll('.card[data-name]')]
         .filter(c => c.style.display !== 'none');
       section.style.display = visibleCards.length > 0 ? '' : 'none';
     });
 
-    // Hide progress banner during search
     const banner = document.querySelector('.prog-banner');
     if (banner) banner.style.display = 'none';
   }
