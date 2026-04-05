@@ -1,1 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Animal GK Quiz — UPSC MCQ Kingdom</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+  :root { --bg:#0a0e1a; --bg2:#111822; --bg3:#0d1520; --green:#22c55e; --green2:#16a34a; --text:#e2e8f0; --muted:#64748b; --border:#1e293b; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:'Source Sans 3',sans-serif; min-height:100vh; }
 
+  /* NAV */
+  nav { background:rgba(10,14,26,0.95); border-bottom:1px solid var(--border); padding:12px 20px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; }
+  .nav-back { color:var(--green); text-decoration:none; font-size:14px; display:flex; align-items:center; gap:6px; }
+  .nav-title { font-family:'Playfair Display',serif; color:#a5d6a7; font-size:16px; }
+
+  /* SCREENS */
+  .screen { display:none; max-width:500px; margin:0 auto; padding:20px 16px 50px; }
+  .screen.active { display:block; }
+
+  /* MENU */
+  .menu-hero { text-align:center; padding:30px 0 24px; }
+  .menu-emoji { font-size:56px; display:block; margin-bottom:12px; }
+  .menu-title { font-family:'Playfair Display',serif; color:#a5d6a7; font-size:28px; font-weight:900; margin-bottom:6px; }
+  .menu-sub { color:#66bb6a; font-size:12px; letter-spacing:2px; text-transform:uppercase; }
+
+  .stats-row { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:20px 0 24px; }
+  .stat-box { background:var(--bg2); border:1px solid var(--border); border-radius:12px; padding:14px 8px; text-align:center; }
+  .stat-val { color:#66bb6a; font-size:22px; font-weight:700; font-family:'Playfair Display',serif; display:block; }
+  .stat-lbl { color:var(--muted); font-size:11px; }
+
+  .start-btn { width:100%; padding:16px; background:linear-gradient(135deg,#1b5e20,#2e7d32); color:#fff; border:none; border-radius:50px; font-size:18px; font-family:inherit; font-weight:600; cursor:pointer; letter-spacing:1px; transition:all 0.2s; margin-bottom:16px; }
+  .start-btn:hover { transform:scale(1.02); box-shadow:0 0 30px #2e7d3255; }
+
+  .divider { color:var(--muted); font-size:13px; text-align:center; margin-bottom:14px; }
+
+  .cat-list { display:flex; flex-direction:column; gap:8px; }
+  .cat-btn { background:var(--bg2); border:2px solid var(--border); color:#a5d6a7; padding:12px 16px; border-radius:10px; cursor:pointer; font-size:14px; font-family:inherit; text-align:left; transition:all 0.2s; display:flex; align-items:center; justify-content:space-between; }
+  .cat-btn:hover { border-color:var(--green); background:#162016; transform:translateX(4px); }
+  .cat-count { background:#1b3a1b; border-radius:20px; padding:2px 10px; font-size:12px; color:#81c784; }
+
+  /* QUIZ */
+  .quiz-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+  .quiz-back { background:none; border:none; color:var(--muted); font-size:22px; cursor:pointer; }
+  .quiz-cat { color:var(--muted); font-size:13px; font-weight:600; }
+  .quiz-score { background:#1b3a1b; color:#81c784; padding:4px 12px; border-radius:20px; font-size:13px; }
+
+  .progress-wrap { background:#1a2a1a; border-radius:8px; height:6px; margin-bottom:18px; overflow:hidden; }
+  .progress-bar { height:100%; background:linear-gradient(90deg,#2e7d32,#66bb6a); border-radius:8px; transition:width 0.4s; }
+
+  .q-number { color:var(--muted); font-size:12px; letter-spacing:2px; text-transform:uppercase; margin-bottom:8px; }
+  .q-cat-tag { display:inline-block; background:#0d2a0d; color:#66bb6a; font-size:11px; padding:3px 10px; border-radius:20px; margin-bottom:12px; border:1px solid #1b4a1b; letter-spacing:1px; }
+  .q-box { background:var(--bg2); border:1px solid var(--border); border-radius:16px; padding:20px 18px; margin-bottom:18px; }
+  .q-text { color:#e8f5e9; font-size:17px; line-height:1.6; font-family:'Playfair Display',serif; font-weight:700; }
+
+  .opt-btn { width:100%; padding:14px 16px; border-radius:12px; border:2px solid var(--border); background:var(--bg2); color:#c8e6c9; font-size:15px; font-family:inherit; cursor:pointer; text-align:left; transition:all 0.15s; margin-bottom:10px; display:flex; align-items:center; gap:10px; }
+  .opt-btn:hover:not(:disabled) { border-color:#388e3c; background:#162016; }
+  .opt-btn:disabled { cursor:default; }
+  .opt-btn.correct { border-color:#2e7d32; background:#0d2a0d; color:#a5d6a7; }
+  .opt-btn.wrong { border-color:#c62828; background:#2a0d0d; color:#ef9a9a; }
+  .opt-letter { width:26px; height:26px; border-radius:50%; background:#1b3a1b; color:#81c784; font-size:13px; text-align:center; line-height:26px; font-weight:700; flex-shrink:0; transition:background 0.15s; }
+  .opt-btn.correct .opt-letter { background:#1b5e20; color:#a5d6a7; }
+  .opt-btn.wrong .opt-letter { background:#4a1010; color:#ef9a9a; }
+  .opt-icon { margin-left:auto; }
+
+  .fact-box { background:#0d1a0d; border:1px solid #1b4a1b; border-radius:12px; padding:14px 16px; margin-bottom:16px; }
+  .fact-label { color:#66bb6a; font-size:12px; font-weight:700; letter-spacing:1px; text-transform:uppercase; margin-bottom:6px; }
+  .fact-text { color:#a5d6a7; font-size:14px; line-height:1.6; }
+
+  .next-btn { width:100%; padding:14px; border-radius:50px; border:none; background:linear-gradient(135deg,#1b5e20,#2e7d32); color:#fff; font-size:16px; font-family:inherit; font-weight:600; cursor:pointer; transition:all 0.2s; }
+  .next-btn:hover { transform:scale(1.02); box-shadow:0 0 20px #2e7d3244; }
+
+  /* RESULTS */
+  .result-box { background:var(--bg2); border:1px solid var(--border); border-radius:20px; padding:28px 20px; text-align:center; margin-bottom:24px; }
+  .result-emoji { font-size:52px; margin-bottom:10px; }
+  .result-title { font-family:'Playfair Display',serif; color:#a5d6a7; font-size:26px; margin-bottom:8px; }
+  .result-pct { font-size:56px; font-weight:900; font-family:'Playfair Display',serif; }
+  .result-grade { font-size:20px; font-weight:600; margin-top:4px; }
+  .result-detail { color:var(--muted); font-size:14px; margin-top:10px; }
+  .result-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:18px; }
+  .rs-box { background:#0d1a0d; border-radius:10px; padding:10px 6px; }
+  .rs-icon { font-size:20px; }
+  .rs-val { color:#a5d6a7; font-size:18px; font-weight:700; display:block; }
+  .rs-lbl { color:var(--muted); font-size:11px; }
+
+  .wrong-section { background:#1a0e0e; border:1px solid #3a1a1a; border-radius:16px; padding:20px; margin-bottom:24px; }
+  .wrong-title { color:#ef9a9a; font-family:'Playfair Display',serif; font-size:17px; margin-bottom:14px; }
+  .wrong-item { background:#110808; border-radius:10px; padding:14px; border-left:3px solid #c62828; margin-bottom:10px; }
+  .wrong-q { color:#ef9a9a; font-size:13px; font-weight:600; margin-bottom:6px; }
+  .wrong-ans { color:#81c784; font-size:13px; }
+  .wrong-fact { color:#78909c; font-size:12px; margin-top:4px; }
+
+  .result-btns { display:flex; gap:10px; }
+  .res-btn { flex:1; padding:13px; border-radius:50px; border:1px solid #2e7d32; background:#1b3a1b; color:#81c784; font-size:15px; font-family:inherit; cursor:pointer; transition:all 0.2s; }
+  .res-btn:hover { background:#2e7d32; color:#fff; }
+  .res-btn.primary { background:#1b4a1b; border-color:#388e3c; }
+
+  @media(max-width:400px) { .stats-row { grid-template-columns:repeat(3,1fr); } }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-back" href="index.html">← Back</a>
+  <div class="nav-title">🦁 Animal GK</div>
+  <div style="width:60px"></div>
+</nav>
+
+<!-- MENU SCREEN -->
+<div class="screen active" id="menuScreen">
+  <div class="menu-hero">
+    <span class="menu-emoji">🦁</span>
+    <div class="menu-title">Animal GK Quiz</div>
+    <div class="menu-sub">UPSC · PCS · State Level · 205 Questions</div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-box"><span class="stat-val">205</span><span class="stat-lbl">Questions</span></div>
+    <div class="stat-box"><span class="stat-val">15</span><span class="stat-lbl">Categories</span></div>
+    <div class="stat-box"><span class="stat-val">UPSC</span><span class="stat-lbl">Level</span></div>
+  </div>
+
+  <button class="start-btn" onclick="startQuiz('All')">🎯 Start Full Quiz (All 205)</button>
+
+  <div class="divider">— or choose a category —</div>
+
+  <div class="cat-list" id="catList"></div>
+</div>
+
+<!-- QUIZ SCREEN -->
+<div class="screen" id="quizScreen">
+  <div class="quiz-header">
+    <button class="quiz-back" onclick="goMenu()">←</button>
+    <span class="quiz-cat" id="qCat"></span>
+    <span class="quiz-score" id="qScore">0/0</span>
+  </div>
+  <div class="progress-wrap"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+  <div class="q-number" id="qNumber"></div>
+  <div class="q-cat-tag" id="qCatTag"></div>
+  <div class="q-box"><div class="q-text" id="qText"></div></div>
+  <div id="optionsWrap"></div>
+  <div class="fact-box" id="factBox" style="display:none">
+    <div class="fact-label">💡 Did You Know?</div>
+    <div class="fact-text" id="factText"></div>
+  </div>
+  <button class="next-btn" id="nextBtn" style="display:none" onclick="nextQuestion()">Next Question →</button>
+</div>
+
+<!-- RESULTS SCREEN -->
+<div class="screen" id="resultsScreen">
+  <div class="result-box">
+    <div class="result-emoji">🏆</div>
+    <div class="result-title">Quiz Complete!</div>
+    <div class="result-pct" id="resPct"></div>
+    <div class="result-grade" id="resGrade"></div>
+    <div class="result-detail" id="resDetail"></div>
+    <div class="result-stats">
+      <div class="rs-box"><div class="rs-icon">✅</div><span class="rs-val" id="rsCorrect"></span><span class="rs-lbl">Correct</span></div>
+      <div class="rs-box"><div class="rs-icon">❌</div><span class="rs-val" id="rsWrong"></span><span class="rs-lbl">Wrong</span></div>
+      <div class="rs-box"><div class="rs-icon">📊</div><span class="rs-val" id="rsScore"></span><span class="rs-lbl">Score</span></div>
+    </div>
+  </div>
+  <div class="wrong-section" id="wrongSection" style="display:none">
+    <div class="wrong-title" id="wrongTitle"></div>
+    <div id="wrongList"></div>
+  </div>
+  <div class="result-btns">
+    <button class="res-btn" onclick="goMenu()">🏠 Menu</button>
+    <button class="res-btn primary" onclick="retryQuiz()">🔄 Retry</button>
+  </div>
+</div>
+
+<script>
+const ALL_QUESTIONS = [
+  {id:1,cat:"Basic Facts",q:"Which is the fastest land animal?",opts:["Lion","Cheetah","Horse","Leopard"],ans:1,fact:"Cheetah runs up to 120 km/h (75 mph)"},
+  {id:2,cat:"Basic Facts",q:"Which is the largest land animal?",opts:["Hippopotamus","Rhinoceros","Elephant","Giraffe"],ans:2,fact:"African elephant is the world's largest land animal"},
+  {id:3,cat:"Basic Facts",q:"Which is the tallest animal in the world?",opts:["Elephant","Camel","Giraffe","Ostrich"],ans:2,fact:"Giraffe can grow up to 5.5–6 metres tall"},
+  {id:4,cat:"Basic Facts",q:"Which is the largest animal in the world?",opts:["Great White Shark","Blue Whale","Elephant","Whale Shark"],ans:1,fact:"Blue whale can grow up to 30 metres and weigh 200 tons"},
+  {id:5,cat:"Basic Facts",q:"Which is the largest fish in the world?",opts:["Great White Shark","Whale Shark","Blue Whale","Manta Ray"],ans:1,fact:"Whale shark is the largest fish; blue whale is a mammal"},
+  {id:6,cat:"Basic Facts",q:"Which is the slowest animal in the world?",opts:["Sloth","Snail","Tortoise","Koala"],ans:0,fact:"Three-toed sloth moves at 0.03 mph on land"},
+  {id:7,cat:"Basic Facts",q:"Which bird lays the largest egg?",opts:["Peacock","Flamingo","Ostrich","Emu"],ans:2,fact:"Ostrich egg weighs about 1.4 kg"},
+  {id:8,cat:"Basic Facts",q:"Which is the smallest bird in the world?",opts:["Sparrow","Hummingbird","Wren","Swallow"],ans:1,fact:"Bee hummingbird of Cuba is the world's smallest bird at 5 cm"},
+  {id:9,cat:"Basic Facts",q:"Which animal has the longest lifespan?",opts:["Elephant","Tortoise","Whale","Crocodile"],ans:1,fact:"Some tortoises live over 200 years"},
+  {id:10,cat:"Basic Facts",q:"Which is the largest land carnivore?",opts:["Tiger","Lion","Polar Bear","Grizzly Bear"],ans:2,fact:"Polar bear is the largest land carnivore"},
+  {id:11,cat:"Basic Facts",q:"Which is the loudest insect?",opts:["Cricket","Grasshopper","Cicada","Locust"],ans:2,fact:"Cicada can produce sounds up to 120 dB"},
+  {id:12,cat:"Basic Facts",q:"Which is the most dangerous creature in the world?",opts:["Shark","Crocodile","Mosquito","Snake"],ans:2,fact:"Mosquito kills over 1 million people per year through diseases"},
+  {id:13,cat:"Basic Facts",q:"Which is the fastest bird?",opts:["Eagle","Hawk","Peregrine Falcon","Swift"],ans:2,fact:"Peregrine falcon dives at over 320 km/h"},
+  {id:14,cat:"Basic Facts",q:"Which animal has the most powerful bite?",opts:["Lion","Hippopotamus","Saltwater Crocodile","Hyena"],ans:2,fact:"Saltwater crocodile has a bite force of 3,700 psi"},
+  {id:15,cat:"Basic Facts",q:"Which animal is known as the ship of the desert?",opts:["Horse","Donkey","Camel","Mule"],ans:2,fact:"Camel can survive 30 days without water"},
+  {id:16,cat:"Basic Facts",q:"Which animal is known as the king of the jungle?",opts:["Tiger","Elephant","Lion","Leopard"],ans:2,fact:"Lion is called king of the jungle, though it lives in grasslands"},
+  {id:17,cat:"Basic Facts",q:"Which is the fastest fish in the ocean?",opts:["Tuna","Marlin","Sailfish","Shark"],ans:2,fact:"Sailfish can swim up to 110 km/h"},
+  {id:18,cat:"Basic Facts",q:"Which is the heaviest animal?",opts:["Elephant","Blue Whale","Whale Shark","Hippopotamus"],ans:1,fact:"Blue whale weighs up to 200 tons"},
+  {id:19,cat:"Basic Facts",q:"Which is the largest bird by height?",opts:["Emu","Penguin","Ostrich","Flamingo"],ans:2,fact:"Ostrich can reach 2.7 metres tall"},
+  {id:20,cat:"Basic Facts",q:"Which land mammal has the most powerful bite?",opts:["Tiger","Hippopotamus","Gorilla","Lion"],ans:1,fact:"Hippopotamus has a bite force of about 1,825 psi"},
+  {id:21,cat:"Body & Biology",q:"How many hearts does an octopus have?",opts:["1","2","3","4"],ans:2,fact:"Octopus has 3 hearts: 2 pump blood to gills, 1 to the body"},
+  {id:22,cat:"Body & Biology",q:"How many brains does an octopus have?",opts:["1","3","6","9"],ans:3,fact:"Octopus has 9 brains: 1 central + 8 in each arm"},
+  {id:23,cat:"Body & Biology",q:"What color is octopus blood?",opts:["Red","Green","Blue","Yellow"],ans:2,fact:"Octopus blood is blue due to hemocyanin (copper-based)"},
+  {id:24,cat:"Body & Biology",q:"How many legs does a spider have?",opts:["6","8","10","12"],ans:1,fact:"All spiders have exactly 8 legs"},
+  {id:25,cat:"Body & Biology",q:"How many legs does a crab have?",opts:["6","8","10","12"],ans:2,fact:"Crabs have 10 legs, including 2 claws"},
+  {id:26,cat:"Body & Biology",q:"Which animal has the highest blood pressure?",opts:["Elephant","Tiger","Giraffe","Horse"],ans:2,fact:"Giraffe's blood pressure is twice that of humans"},
+  {id:27,cat:"Body & Biology",q:"Which land animal has the largest eyes?",opts:["Elephant","Horse","Giraffe","Ostrich"],ans:3,fact:"Ostrich eye is 5 cm across, larger than its brain"},
+  {id:28,cat:"Body & Biology",q:"How many stomachs does a cow have?",opts:["1","2","3","4"],ans:3,fact:"Cow has 4 stomach compartments"},
+  {id:29,cat:"Body & Biology",q:"How many teeth does an elephant have?",opts:["2","6","26","32"],ans:2,fact:"Elephants have 26 teeth: 2 incisors (tusks) + 24 molars"},
+  {id:30,cat:"Body & Biology",q:"What is the top of a turtle's shell called?",opts:["Plastron","Scute","Carapace","Shield"],ans:2,fact:"Carapace is the top shell; plastron is the bottom"},
+  {id:31,cat:"Body & Biology",q:"What color is polar bear skin under white fur?",opts:["Pink","White","Brown","Black"],ans:3,fact:"Polar bear has black skin to absorb sunlight for warmth"},
+  {id:32,cat:"Body & Biology",q:"How far can an owl rotate its head?",opts:["90°","180°","270°","360°"],ans:2,fact:"Owls can rotate heads 270° due to extra neck vertebrae"},
+  {id:33,cat:"Body & Biology",q:"Which animal has the longest tongue relative to body size?",opts:["Anteater","Chameleon","Frog","Snake"],ans:1,fact:"Chameleon's tongue is twice the length of its body"},
+  {id:34,cat:"Body & Biology",q:"Which animal smells with its tongue?",opts:["Crocodile","Lizard","Snake","Shark"],ans:2,fact:"Snake uses forked tongue to collect chemical particles"},
+  {id:35,cat:"Body & Biology",q:"Which animal has 32 brains and 300 teeth?",opts:["Starfish","Leech","Octopus","Squid"],ans:1,fact:"Leech has 32 brains (ganglia) and 300 teeth"},
+  {id:36,cat:"Body & Biology",q:"How many legs does a lobster have?",opts:["6","8","10","12"],ans:2,fact:"Lobster has 10 legs (5 pairs)"},
+  {id:37,cat:"Body & Biology",q:"Which animal's teeth never stop growing?",opts:["Horse","Dog","Rat","Cat"],ans:2,fact:"Rats, rabbits and squirrels have continuously growing teeth"},
+  {id:38,cat:"Body & Biology",q:"How many tentacles does an octopus have?",opts:["6","8","10","12"],ans:1,fact:"Octopus has 8 arms"},
+  {id:39,cat:"Body & Biology",q:"What color are flamingos at birth?",opts:["Pink","White","Gray","Yellow"],ans:2,fact:"Flamingos are born gray; they turn pink from carotenoids in food"},
+  {id:40,cat:"Body & Biology",q:"How many eyes does a spider have?",opts:["4","6","8","2"],ans:2,fact:"Most spiders have 8 eyes"},
+  {id:41,cat:"Animal Behavior",q:"Which animal sleeps approximately 20 hours a day?",opts:["Panda","Sloth","Koala","Bat"],ans:2,fact:"Koalas sleep up to 22 hours due to low-nutrient eucalyptus diet"},
+  {id:42,cat:"Animal Behavior",q:"Which animal can sleep standing up?",opts:["Cow","Horse","Elephant","All of these"],ans:3,fact:"Horses, cows and elephants can all sleep standing up"},
+  {id:43,cat:"Animal Behavior",q:"Which animal sleeps upside down?",opts:["Sloth","Bat","Flying Squirrel","Both A & B"],ans:3,fact:"Both bats and sloths sleep upside down"},
+  {id:44,cat:"Animal Behavior",q:"Which animal can hibernate for up to 3 years?",opts:["Bear","Hedgehog","Snail","Frog"],ans:2,fact:"Snails can seal themselves in their shell and hibernate for years"},
+  {id:45,cat:"Animal Behavior",q:"Which animal plays dead when threatened?",opts:["Frog","Opossum","Armadillo","Hedgehog"],ans:1,fact:"Opossum plays possum — goes limp to avoid predators"},
+  {id:46,cat:"Animal Behavior",q:"Which animal builds dams in rivers?",opts:["Otter","Beaver","Muskrat","Nutria"],ans:1,fact:"Beavers build dams to create ponds for protection"},
+  {id:47,cat:"Animal Behavior",q:"Which male animal gives birth?",opts:["Male Frog","Male Seahorse","Male Penguin","Male Spider"],ans:1,fact:"Male seahorse carries eggs in a pouch and gives birth"},
+  {id:48,cat:"Animal Behavior",q:"Which animal never drinks water in its life?",opts:["Camel","Kangaroo Rat","Desert Fox","Gila Monster"],ans:1,fact:"Kangaroo rat gets all moisture from seeds it eats"},
+  {id:49,cat:"Animal Behavior",q:"Which animal drinks water through its nose?",opts:["Tapir","Elephant","Anteater","Aardvark"],ans:1,fact:"Elephants suck water into trunk then pour it into mouth"},
+  {id:50,cat:"Animal Behavior",q:"Which animal can stop breathing for 6 days?",opts:["Tortoise","Crocodile","Scorpion","Snake"],ans:2,fact:"Scorpions have very slow metabolism"},
+  {id:51,cat:"Animal Behavior",q:"Which animal cannot walk backwards?",opts:["Elephant","Kangaroo","Giraffe","Rhino"],ans:1,fact:"Kangaroos cannot walk backwards due to tail and leg structure"},
+  {id:52,cat:"Animal Behavior",q:"Which animal cannot look up at the sky?",opts:["Horse","Cow","Pig","Goat"],ans:2,fact:"It is physically impossible for pigs to look up"},
+  {id:53,cat:"Animal Behavior",q:"Which animal can regrow its limbs?",opts:["Gecko","Salamander","Starfish","All of these"],ans:3,fact:"Starfish, salamanders and some lizards can regenerate limbs"},
+  {id:54,cat:"Animal Behavior",q:"Which bird can fly backwards?",opts:["Swift","Eagle","Hummingbird","Kingfisher"],ans:2,fact:"Hummingbird is the only bird that can fly backwards"},
+  {id:55,cat:"Animal Behavior",q:"Which animal plants thousands of trees each year?",opts:["Woodpecker","Squirrel","Jay","Both B & C"],ans:3,fact:"Squirrels and jays bury nuts and forget locations, planting trees"},
+  {id:56,cat:"Animal Behavior",q:"Which animal remains standing even after death?",opts:["Elephant","Giraffe","Tiger","Horse"],ans:2,fact:"Tiger's leg muscles are so strong the body can remain upright"},
+  {id:57,cat:"Animal Behavior",q:"Which animal can only eat with its head upside down?",opts:["Pelican","Flamingo","Spoonbill","Avocet"],ans:1,fact:"Flamingo's bill is designed to filter food when head is inverted"},
+  {id:58,cat:"Animal Behavior",q:"Which animal can walk on water?",opts:["Gecko","Basilisk Lizard","Water Strider","Both B & C"],ans:3,fact:"Basilisk lizard and water strider can both walk on water"},
+  {id:59,cat:"Classification",q:"Which of these is a reptile?",opts:["Frog","Toad","Snake","Salamander"],ans:2,fact:"Snakes are reptiles; frogs, toads and salamanders are amphibians"},
+  {id:60,cat:"Classification",q:"Which of these is a mammal?",opts:["Shark","Dolphin","Tuna","Salmon"],ans:1,fact:"Dolphins breathe air and nurse young with milk"},
+  {id:61,cat:"Classification",q:"Is a bat a mammal or a bird?",opts:["Bird","Mammal","Reptile","Amphibian"],ans:1,fact:"Bats are the only mammals capable of sustained flight"},
+  {id:62,cat:"Classification",q:"What type of animal is a Komodo dragon?",opts:["Snake","Crocodile","Lizard","Salamander"],ans:2,fact:"Komodo dragon is the world's largest living lizard"},
+  {id:63,cat:"Classification",q:"Which is NOT a mammal?",opts:["Whale","Bat","Penguin","Dolphin"],ans:2,fact:"Penguin is a bird, not a mammal"},
+  {id:64,cat:"Classification",q:"Which animal is an amphibian?",opts:["Turtle","Iguana","Frog","Gecko"],ans:2,fact:"Frogs live both in water and on land — true amphibians"},
+  {id:65,cat:"Classification",q:"Sea sponge is classified as?",opts:["Plant","Algae","Animal","Fungi"],ans:2,fact:"Sea sponges are simple multicellular animals"},
+  {id:66,cat:"Classification",q:"Coral reef is made of which type of organism?",opts:["Plants","Fungi","Animals","Bacteria"],ans:2,fact:"Coral polyps are tiny animals that build calcium carbonate skeletons"},
+  {id:67,cat:"National Animals",q:"What is the National Animal of India?",opts:["Lion","Leopard","Tiger","Cheetah"],ans:2,fact:"Bengal Tiger is India's national animal since 1973"},
+  {id:68,cat:"National Animals",q:"What is the National Heritage Animal of India?",opts:["Rhinoceros","Elephant","Camel","Gaur"],ans:1,fact:"Indian Elephant was declared National Heritage Animal in 2010"},
+  {id:69,cat:"National Animals",q:"What is the National Bird of India?",opts:["Crane","Flamingo","Peacock","Kingfisher"],ans:2,fact:"Indian Peacock is the national bird of India"},
+  {id:70,cat:"National Animals",q:"What is the National Animal of Australia?",opts:["Koala","Emu","Platypus","Kangaroo"],ans:3,fact:"Red kangaroo is the national animal of Australia"},
+  {id:71,cat:"National Animals",q:"What is the National Animal of Canada?",opts:["Moose","Beaver","Bear","Bald Eagle"],ans:1,fact:"Beaver is Canada's national animal"},
+  {id:72,cat:"National Animals",q:"What is the National Animal of China?",opts:["Tiger","Dragon","Giant Panda","Crane"],ans:2,fact:"Giant Panda is China's national animal"},
+  {id:73,cat:"National Animals",q:"What is the National Animal of Pakistan?",opts:["Snow Leopard","Lion","Markhor","Ibex"],ans:2,fact:"Markhor (a wild goat) is Pakistan's national animal"},
+  {id:74,cat:"National Animals",q:"What is the National Animal of Bangladesh?",opts:["Lion","Royal Bengal Tiger","Elephant","Rhino"],ans:1,fact:"Royal Bengal Tiger is the national animal of Bangladesh"},
+  {id:75,cat:"National Animals",q:"What is the National Animal of Nepal?",opts:["Tiger","Snow Leopard","Cow","Elephant"],ans:2,fact:"Cow is the national animal of Nepal"},
+  {id:76,cat:"National Animals",q:"What is the National Animal of New Zealand?",opts:["Kiwi bird","Kea","Tuatara","Kakapo"],ans:0,fact:"Kiwi bird is New Zealand's national animal"},
+  {id:77,cat:"Indian Wildlife",q:"Project Tiger was launched in which year?",opts:["1969","1971","1973","1975"],ans:2,fact:"Project Tiger was launched on April 1, 1973 by PM Indira Gandhi"},
+  {id:78,cat:"Indian Wildlife",q:"Kaziranga National Park is famous for?",opts:["Bengal Tiger","One-horned Rhinoceros","Asiatic Lion","Snow Leopard"],ans:1,fact:"Kaziranga has two-thirds of world's one-horned rhinoceroses"},
+  {id:79,cat:"Indian Wildlife",q:"Asiatic Lion is found only in which forest of India?",opts:["Sundarbans","Bandhavgarh","Gir Forest, Gujarat","Jim Corbett"],ans:2,fact:"Gir National Park, Gujarat is the only home of Asiatic Lions"},
+  {id:80,cat:"Indian Wildlife",q:"Snow Leopard is found in which region of India?",opts:["Western Ghats","Sundarbans","Eastern Ghats","Himalayas"],ans:3,fact:"Snow leopard lives in high-altitude Himalayan regions"},
+  {id:81,cat:"Indian Wildlife",q:"Sundarbans is famous for which animal?",opts:["Elephant","Asiatic Lion","Royal Bengal Tiger","Snow Leopard"],ans:2,fact:"Sundarbans mangrove forests are home to Royal Bengal Tigers"},
+  {id:82,cat:"Indian Wildlife",q:"Great Indian Bustard is found mainly in?",opts:["Gujarat","Maharashtra","Rajasthan","Madhya Pradesh"],ans:2,fact:"Rajasthan hosts most remaining Great Indian Bustards"},
+  {id:83,cat:"Indian Wildlife",q:"Project Elephant was launched in which year?",opts:["1990","1992","1994","1996"],ans:1,fact:"Project Elephant was launched in 1992"},
+  {id:84,cat:"Indian Wildlife",q:"Which national park is famous for migratory birds?",opts:["Bharatpur (Keoladeo)","Kaziranga","Sundarbans","Gir"],ans:0,fact:"Keoladeo Ghana National Park hosts 370+ bird species"},
+  {id:85,cat:"Marine Life",q:"Which is the largest ocean in the world?",opts:["Atlantic","Indian","Arctic","Pacific"],ans:3,fact:"Pacific Ocean covers about 165 million sq km"},
+  {id:86,cat:"Marine Life",q:"What is the deepest place on Earth?",opts:["Tonga Trench","Kermadec Trench","Mariana Trench","Java Trench"],ans:2,fact:"Mariana Trench is 11,000 metres deep"},
+  {id:87,cat:"Marine Life",q:"What percentage of Earth's surface is covered by oceans?",opts:["51%","61%","71%","81%"],ans:2,fact:"71% of Earth is covered by water"},
+  {id:88,cat:"Marine Life",q:"Blue whales eat primarily?",opts:["Fish","Squid","Krill","Seaweed"],ans:2,fact:"Blue whale eats up to 4 tons of krill per day"},
+  {id:89,cat:"Marine Life",q:"How many hearts does an octopus have?",opts:["1","2","3","4"],ans:2,fact:"3 hearts: 2 branchial hearts + 1 systemic heart"},
+  {id:90,cat:"Marine Life",q:"Do whales lay eggs?",opts:["Yes","No, they give live birth","Only some species","Only blue whales"],ans:1,fact:"Whales are mammals — they give birth to live young"},
+  {id:91,cat:"Marine Life",q:"Which animal produces pearls?",opts:["Snail","Mussel","Oyster","Clam"],ans:2,fact:"Pearl oysters create pearls as defense against irritants"},
+  {id:92,cat:"Marine Life",q:"How fast can dolphins swim?",opts:["10 mph","22 mph","35 mph","45 mph"],ans:1,fact:"Bottlenose dolphins swim at up to 22 mph"},
+  {id:93,cat:"Marine Life",q:"What is the fear of deep water called?",opts:["Aquaphobia","Hydrophobia","Thalassophobia","Bathophobia"],ans:2,fact:"Thalassophobia = fear of large, deep water bodies"},
+  {id:94,cat:"Marine Life",q:"Which marine mammal is known for singing?",opts:["Dolphin","Seal","Whale","Walrus"],ans:2,fact:"Humpback whale songs can last 30 minutes"},
+  {id:95,cat:"Birds",q:"Which bird is the symbol of peace?",opts:["Eagle","Pigeon/Dove","Crane","Swan"],ans:1,fact:"White dove has been a universal symbol of peace"},
+  {id:96,cat:"Birds",q:"Which bird is called the king of birds?",opts:["Peacock","Falcon","Eagle","Condor"],ans:2,fact:"Eagle is called king of birds due to strength and sharp vision"},
+  {id:97,cat:"Birds",q:"Which bird has the longest eyesight?",opts:["Hawk","Falcon","Eagle","Owl"],ans:2,fact:"Eagle can spot prey from 3.2 km away"},
+  {id:98,cat:"Birds",q:"Which bird cannot see during the day?",opts:["Bat","Owl","Nighthawk","Kiwi"],ans:1,fact:"Owls are nocturnal — large eyes adapted for night vision"},
+  {id:99,cat:"Birds",q:"Which bird has a colorful fan-like tail?",opts:["Flamingo","Parrot","Peacock","Crane"],ans:2,fact:"Male peacock's tail has iridescent eye-spots"},
+  {id:100,cat:"Birds",q:"Which is the only bird that can swim but not fly?",opts:["Kiwi","Emu","Penguin","Ostrich"],ans:2,fact:"Penguin's wings evolved into flippers for swimming"},
+  {id:101,cat:"Birds",q:"Which bird runs the fastest?",opts:["Emu","Ostrich","Rhea","Cassowary"],ans:1,fact:"Ostrich runs at up to 70 km/h"},
+  {id:102,cat:"Birds",q:"Which is the national bird of Australia?",opts:["Kookaburra","Kangaroo","Emu","Cockatoo"],ans:2,fact:"Emu appears on Australia's coat of arms"},
+  {id:103,cat:"Birds",q:"Which is the largest bird by wingspan?",opts:["Eagle","Albatross","Condor","Pelican"],ans:1,fact:"Wandering Albatross has wingspan up to 3.7 metres"},
+  {id:104,cat:"Birds",q:"Which bird is associated with delivering babies in folklore?",opts:["Crane","Stork","Swan","Heron"],ans:1,fact:"Stork is associated with newborn delivery in European folklore"},
+  {id:105,cat:"Insects",q:"Which insect is the deadliest to humans?",opts:["Bee","Wasp","Mosquito","Fire Ant"],ans:2,fact:"Mosquito transmits malaria, dengue, Zika, killing 1 million+ yearly"},
+  {id:106,cat:"Insects",q:"How many legs does an insect have?",opts:["4","6","8","10"],ans:1,fact:"All insects have exactly 6 legs"},
+  {id:107,cat:"Insects",q:"How many legs does a cockroach have?",opts:["4","6","8","10"],ans:1,fact:"Cockroach has 6 legs like all insects"},
+  {id:108,cat:"Insects",q:"How many flowers do honeybees visit to make 1 pound of honey?",opts:["10,000","500,000","2 million","10 million"],ans:2,fact:"Bees must visit about 2 million flowers for 1 pound of honey"},
+  {id:109,cat:"Insects",q:"Which insect has a queen?",opts:["Butterfly","Ant","Grasshopper","Beetle"],ans:1,fact:"Ants, bees and termites have queens who lay all eggs"},
+  {id:110,cat:"Insects",q:"What is the smallest known insect?",opts:["Flea","Gnat","Fairyfly","Midge"],ans:2,fact:"Fairyfly is 0.139 mm — smaller than a grain of sand"},
+  {id:111,cat:"Insects",q:"How many wings does a bee have?",opts:["2","4","6","None"],ans:1,fact:"Bees have 4 wings arranged in 2 pairs"},
+  {id:112,cat:"Insects",q:"What shape do mating dragonflies make?",opts:["Circle","Heart","Star","Diamond"],ans:1,fact:"Dragonfly mating wheel forms a heart shape"},
+  {id:113,cat:"Unusual Facts",q:"Which animal has no brain or heart?",opts:["Starfish","Jellyfish","Both","Sea Sponge"],ans:2,fact:"Both jellyfish and starfish have no brain or heart"},
+  {id:114,cat:"Unusual Facts",q:"Which animal's poop is cube-shaped?",opts:["Rabbit","Wombat","Koala","Kangaroo"],ans:1,fact:"Wombat is the only animal that produces cube-shaped scat"},
+  {id:115,cat:"Unusual Facts",q:"Which country has no mosquitoes?",opts:["Norway","Greenland","Iceland","Finland"],ans:2,fact:"Iceland's climate is too cold and windy for mosquitoes"},
+  {id:116,cat:"Unusual Facts",q:"Chocolate is toxic to dogs due to which chemical?",opts:["Caffeine","Theobromine","Xylitol","Tannin"],ans:1,fact:"Theobromine in chocolate cannot be metabolized by dogs"},
+  {id:117,cat:"Unusual Facts",q:"How far can a lion's roar be heard?",opts:["3 km","5 km","8 km","15 km"],ans:2,fact:"Lion's roar can travel 8 km (5 miles)"},
+  {id:118,cat:"Unusual Facts",q:"Which animal has the best memory?",opts:["Dog","Dolphin","Elephant","Chimpanzee"],ans:2,fact:"Elephants remember locations, faces and events for decades"},
+  {id:119,cat:"Unusual Facts",q:"How long can a camel survive without water?",opts:["7 days","15 days","30 days","60 days"],ans:2,fact:"Camels store fat in humps; can survive 30 days without water"},
+  {id:120,cat:"Unusual Facts",q:"Which animal uses echolocation?",opts:["Bat","Dolphin","Both","Owl"],ans:2,fact:"Both bats and dolphins use echolocation to navigate and hunt"},
+  {id:121,cat:"Unusual Facts",q:"Which animal can survive in outer space?",opts:["Cockroach","Tardigrade","Scorpion","Deep-sea fish"],ans:1,fact:"Tardigrades survive vacuum, radiation and extreme temperatures"},
+  {id:122,cat:"Unusual Facts",q:"Which animal's milk kills people?",opts:["Horse","Ox","Tiger","Goat"],ans:2,fact:"Tiger's milk is not consumable by humans"},
+  {id:123,cat:"Baby Animals",q:"What is a baby kangaroo called?",opts:["Cub","Kitten","Joey","Foal"],ans:2,fact:"Joey is born at 1 inch and crawls into mother's pouch"},
+  {id:124,cat:"Baby Animals",q:"What is a baby elephant called?",opts:["Pup","Calf","Cub","Foal"],ans:1,fact:"Baby elephant (calf) weighs about 100 kg at birth"},
+  {id:125,cat:"Baby Animals",q:"What is a baby frog called?",opts:["Larva","Nymph","Tadpole","Froglet"],ans:2,fact:"Tadpole has a tail and gills, which disappear as it matures"},
+  {id:126,cat:"Baby Animals",q:"What is a baby deer called?",opts:["Cub","Lamb","Fawn","Calf"],ans:2,fact:"Baby deer (fawn) has white spots for camouflage"},
+  {id:127,cat:"Baby Animals",q:"What is a baby horse called?",opts:["Cub","Pup","Calf","Foal"],ans:3,fact:"Foal can stand and walk within hours of birth"},
+  {id:128,cat:"Baby Animals",q:"What is a baby sheep called?",opts:["Kid","Cub","Lamb","Pup"],ans:2,fact:"Baby sheep is a lamb; baby goat is a kid"},
+  {id:129,cat:"Baby Animals",q:"What is a newborn kangaroo's size?",opts:["1 inch","3 inches","5 inches","10 inches"],ans:0,fact:"Newborn joey is about 1 inch long"},
+  {id:130,cat:"Animal Groups",q:"What is a group of lions called?",opts:["Pack","Herd","Pride","Flock"],ans:2,fact:"A group of lions is a pride — typically 15-30 animals"},
+  {id:131,cat:"Animal Groups",q:"What is a group of wolves called?",opts:["Pack","Pride","Herd","Mob"],ans:0,fact:"Wolf pack is led by an alpha male and female"},
+  {id:132,cat:"Animal Groups",q:"What is a group of elephants called?",opts:["Pack","Herd","Pride","Colony"],ans:1,fact:"Elephant herd is led by the oldest female (matriarch)"},
+  {id:133,cat:"Animal Groups",q:"What is a group of fish called?",opts:["Pack","School","Flock","Colony"],ans:1,fact:"Fish swim in schools for protection from predators"},
+  {id:134,cat:"Animal Groups",q:"What is a group of crows called?",opts:["Flock","Pack","Murder","Horde"],ans:2,fact:"A group of crows is called a murder"},
+  {id:135,cat:"Animal Groups",q:"What is a group of flamingos called?",opts:["Flock","Flamboyance","Colony","Gaggle"],ans:1,fact:"A group of flamingos is called a flamboyance"},
+  {id:136,cat:"Animal Groups",q:"What is a group of bees called?",opts:["Pack","Colony","Swarm","Hive"],ans:2,fact:"A swarm is a group of bees; a hive is their home"},
+  {id:137,cat:"Adaptation",q:"Which reptile can change color to blend with surroundings?",opts:["Iguana","Chameleon","Gecko","Komodo Dragon"],ans:1,fact:"Chameleon changes color for communication and temperature regulation"},
+  {id:138,cat:"Adaptation",q:"Which bird migrates the longest distance?",opts:["Albatross","Arctic Tern","Swallow","Stork"],ans:1,fact:"Arctic Tern migrates 70,900 km annually"},
+  {id:139,cat:"Adaptation",q:"Which animal uses skin to breathe underwater?",opts:["Turtle","Alligator","Frog","Crocodile"],ans:2,fact:"Frogs absorb oxygen through moist skin"},
+  {id:140,cat:"Adaptation",q:"Which aquatic animal never stops growing?",opts:["Dolphin","Whale","Shark","Octopus"],ans:2,fact:"Sharks continue growing until death"},
+  {id:141,cat:"Adaptation",q:"Which animal uses bubbles to trap prey?",opts:["Dolphin","Humpback Whale","Shark","Barracuda"],ans:1,fact:"Humpback whales blow bubble nets to concentrate fish"},
+  {id:142,cat:"Adaptation",q:"Cats spend approximately what percentage of life sleeping?",opts:["40%","55%","70%","80%"],ans:2,fact:"Cats sleep 12-16 hours daily, about 70% of their lives"},
+  {id:143,cat:"Conservation",q:"In which country is killing an elephant punishable by death?",opts:["India","Thailand","Kenya","Sri Lanka"],ans:3,fact:"Sri Lanka law provides for death penalty for killing an elephant"},
+  {id:144,cat:"Conservation",q:"Which act protects wildlife in India?",opts:["Forest Act 1927","Wildlife Protection Act 1972","Environment Act 1986","Bio Act 2002"],ans:1,fact:"Wildlife (Protection) Act, 1972 is the primary wildlife law in India"},
+  {id:145,cat:"Conservation",q:"IUCN stands for?",opts:["International Union for Conservation of Nature","Indian Union for Conservation","International Unit for Conservation Needs","None"],ans:0,fact:"IUCN was founded in 1948 and maintains the Red List"},
+  {id:146,cat:"UPSC Special",q:"Which is the only continent with no native reptiles?",opts:["Arctic","Antarctica","Greenland","Iceland"],ans:1,fact:"Antarctica is too cold for reptiles, which are cold-blooded"},
+  {id:147,cat:"UPSC Special",q:"Cats sweat through which body part?",opts:["Skin","Nose","Paws","Tongue"],ans:2,fact:"Cats have sweat glands only on their paw pads"},
+  {id:148,cat:"UPSC Special",q:"Dogs sweat through which body part?",opts:["Skin","Paws","Tongue","Nose"],ans:1,fact:"Dogs sweat through paw pads and cool off by panting"},
+  {id:149,cat:"UPSC Special",q:"Which is the only mammal capable of true flight?",opts:["Flying Squirrel","Bat","Sugar Glider","Colugo"],ans:1,fact:"Only bats have true powered flight among mammals"},
+  {id:150,cat:"UPSC Special",q:"Which animal is called river horse?",opts:["Manatee","Hippopotamus","Tapir","Dugong"],ans:1,fact:"Hippopotamus means river horse in Greek"},
+  {id:151,cat:"UPSC Special",q:"Which animal is called sea cow?",opts:["Walrus","Seal","Manatee/Dugong","Sea Lion"],ans:2,fact:"Manatees and dugongs are called sea cows"},
+  {id:152,cat:"UPSC Special",q:"Which is the most intelligent animal after humans?",opts:["Elephant","Dolphin","Chimpanzee","Crow"],ans:2,fact:"Chimpanzees share 98.7% DNA with humans and use tools"},
+  {id:153,cat:"UPSC Special",q:"Which is the primary food of the koala?",opts:["Bamboo","Eucalyptus leaves","Grass","Fruit"],ans:1,fact:"Koalas eat almost exclusively eucalyptus leaves"},
+  {id:154,cat:"UPSC Special",q:"How many toes does a deer have on each foot?",opts:["1","2","3","4"],ans:1,fact:"Deer are even-toed ungulates with 2 main toes per hoof"},
+  {id:155,cat:"UPSC Special",q:"Which animal has the most powerful electric shock?",opts:["Torpedo Ray","Electric Catfish","Electric Eel","Stargazer Fish"],ans:2,fact:"Electric eel can generate up to 600 volts"},
+];
+
+const CATS = ["All", ...new Set(ALL_QUESTIONS.map(q => q.cat))];
+const CAT_ICONS = {"Basic Facts":"🐾","Body & Biology":"🔬","Animal Behavior":"🧠","Classification":"📋","National Animals":"🏳️","Indian Wildlife":"🇮🇳","Marine Life":"🌊","Birds":"🦅","Insects":"🐛","Unusual Facts":"❓","Baby Animals":"🍼","Animal Groups":"👥","Adaptation":"🌿","Conservation":"🌱","UPSC Special":"📝"};
+const LABELS = ["A","B","C","D"];
+
+let questions = [], current = 0, score = 0, answered = 0, selected = null, wrongList = [], currentCat = "All";
+
+// Build category list
+const catList = document.getElementById("catList");
+CATS.filter(c => c !== "All").forEach(cat => {
+  const count = ALL_QUESTIONS.filter(q => q.cat === cat).length;
+  const btn = document.createElement("button");
+  btn.className = "cat-btn";
+  btn.innerHTML = `<span>${CAT_ICONS[cat]||"📚"} <strong>${cat}</strong></span><span class="cat-count">${count} Q</span>`;
+  btn.onclick = () => startQuiz(cat);
+  catList.appendChild(btn);
+});
+
+function startQuiz(cat) {
+  currentCat = cat;
+  const pool = cat === "All" ? ALL_QUESTIONS : ALL_QUESTIONS.filter(q => q.cat === cat);
+  questions = [...pool].sort(() => Math.random() - 0.5);
+  current = 0; score = 0; answered = 0; selected = null; wrongList = [];
+  showScreen("quizScreen");
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = questions[current];
+  const pct = (current / questions.length) * 100;
+  document.getElementById("progressBar").style.width = pct + "%";
+  document.getElementById("qCat").textContent = currentCat;
+  document.getElementById("qScore").textContent = score + "/" + answered;
+  document.getElementById("qNumber").textContent = "Question " + (current+1) + " of " + questions.length;
+  document.getElementById("qCatTag").textContent = q.cat;
+  document.getElementById("qText").textContent = q.q;
+  document.getElementById("factBox").style.display = "none";
+  document.getElementById("nextBtn").style.display = "none";
+  selected = null;
+
+  const wrap = document.getElementById("optionsWrap");
+  wrap.innerHTML = "";
+  q.opts.forEach((opt, idx) => {
+    const btn = document.createElement("button");
+    btn.className = "opt-btn";
+    btn.innerHTML = `<span class="opt-letter">${LABELS[idx]}</span>${opt}<span class="opt-icon"></span>`;
+    btn.onclick = () => handleAnswer(idx);
+    wrap.appendChild(btn);
+  });
+}
+
+function handleAnswer(idx) {
+  if (selected !== null) return;
+  selected = idx;
+  answered++;
+  const q = questions[current];
+  const btns = document.querySelectorAll(".opt-btn");
+
+  if (idx === q.ans) {
+    score++;
+    btns[idx].classList.add("correct");
+    btns[idx].querySelector(".opt-icon").textContent = "✅";
+  } else {
+    btns[idx].classList.add("wrong");
+    btns[idx].querySelector(".opt-icon").textContent = "❌";
+    btns[q.ans].classList.add("correct");
+    btns[q.ans].querySelector(".opt-icon").textContent = "✅";
+    wrongList.push(q);
+  }
+
+  btns.forEach(b => b.disabled = true);
+  document.getElementById("factText").textContent = q.fact;
+  document.getElementById("factBox").style.display = "block";
+  const nextBtn = document.getElementById("nextBtn");
+  nextBtn.style.display = "block";
+  nextBtn.textContent = current + 1 >= questions.length ? "🏁 See Results" : "Next Question →";
+  document.getElementById("qScore").textContent = score + "/" + answered;
+}
+
+function nextQuestion() {
+  if (current + 1 >= questions.length) {
+    showResults();
+  } else {
+    current++;
+    renderQuestion();
+  }
+}
+
+function showResults() {
+  const pct = Math.round((score / questions.length) * 100);
+  const grades = [
+    [90, "#00e676", "Excellent! 🏆"],
+    [75, "#40c4ff", "Very Good! 🌟"],
+    [60, "#ffea00", "Good! 👍"],
+    [40, "#ff9100", "Average 📚"],
+    [0,  "#ff5252", "Needs Practice 💪"]
+  ];
+  const [, color, label] = grades.find(([min]) => pct >= min);
+
+  document.getElementById("resPct").textContent = pct + "%";
+  document.getElementById("resPct").style.color = color;
+  document.getElementById("resGrade").textContent = label;
+  document.getElementById("resGrade").style.color = color;
+  document.getElementById("resDetail").textContent = `You scored ${score} out of ${questions.length}`;
+  document.getElementById("rsCorrect").textContent = score;
+  document.getElementById("rsWrong").textContent = questions.length - score;
+  document.getElementById("rsScore").textContent = pct + "%";
+
+  const wrongSec = document.getElementById("wrongSection");
+  if (wrongList.length > 0) {
+    wrongSec.style.display = "block";
+    document.getElementById("wrongTitle").textContent = `❌ Review Wrong Answers (${wrongList.length})`;
+    const wl = document.getElementById("wrongList");
+    wl.innerHTML = wrongList.map(wq => `
+      <div class="wrong-item">
+        <div class="wrong-q">${wq.q}</div>
+        <div class="wrong-ans">✅ ${wq.opts[wq.ans]}</div>
+        <div class="wrong-fact">💡 ${wq.fact}</div>
+      </div>`).join("");
+  } else {
+    wrongSec.style.display = "none";
+  }
+
+  showScreen("resultsScreen");
+}
+
+function retryQuiz() { startQuiz(currentCat); }
+function goMenu() { showScreen("menuScreen"); }
+function showScreen(id) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  window.scrollTo(0, 0);
+}
+</script>
+</body>
+</html>
