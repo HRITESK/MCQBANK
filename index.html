@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>UPSC MCQ Kingdom — Master Every Subject</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Crimson+Pro:wght@400;600&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #07090f;
+    --bg2: #0d1117;
+    --bg3: #111827;
+    --gold: #c9a84c;
+    --gold2: #f5d67a;
+    --green: #22c55e;
+    --green2: #16a34a;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --border: #1e293b;
+    --card: #0d1520;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+
+  /* === ANIMATED BG === */
+  .bg-stars {
+    position: fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0;
+    background: radial-gradient(ellipse at 20% 20%, #0d1f0d22 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 80%, #1a0d2222 0%, transparent 60%),
+                radial-gradient(ellipse at 50% 50%, #0a0f1a 0%, #07090f 100%);
+  }
+  .particle { position: fixed; border-radius: 50%; pointer-events:none; z-index:0; animation: drift linear infinite; opacity:0.15; }
+  @keyframes drift { 0%{transform:translateY(100vh) rotate(0deg);opacity:0;} 10%{opacity:0.15;} 90%{opacity:0.15;} 100%{transform:translateY(-100px) rotate(720deg);opacity:0;} }
+
+  /* === NAV === */
+  nav {
+    position: sticky; top:0; z-index:100;
+    background: rgba(7,9,15,0.92); backdrop-filter: blur(20px);
+    border-bottom: 1px solid #1e293b44;
+    padding: 14px 20px;
+    display: flex; align-items:center; justify-content:space-between;
+  }
+  .nav-logo { font-family: 'Cinzel', serif; font-size: 18px; color: var(--gold); letter-spacing: 1px; }
+  .nav-logo span { color: var(--green); }
+  .nav-badge { background: #16a34a22; border: 1px solid #16a34a55; color: var(--green); font-size: 11px; padding: 4px 12px; border-radius: 20px; letter-spacing: 1px; }
+
+  /* === HERO === */
+  .hero {
+    position: relative; z-index:1;
+    text-align: center;
+    padding: 60px 20px 40px;
+    overflow: hidden;
+  }
+  .hero::before {
+    content:''; position:absolute; top:-50%; left:-50%; width:200%; height:200%;
+    background: conic-gradient(from 0deg at 50% 50%, transparent 0deg, #22c55e08 30deg, transparent 60deg, transparent 360deg);
+    animation: rotateBg 20s linear infinite;
+    pointer-events:none;
+  }
+  @keyframes rotateBg { to { transform: rotate(360deg); } }
+
+  .hero-eyebrow {
+    display: inline-block;
+    background: linear-gradient(135deg, #16a34a22, #c9a84c22);
+    border: 1px solid #c9a84c44;
+    color: var(--gold); font-size: 11px; letter-spacing: 3px;
+    text-transform: uppercase; padding: 6px 18px; border-radius: 20px;
+    margin-bottom: 20px; animation: fadeDown 0.6s ease;
+  }
+  .hero-title {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(28px, 7vw, 52px);
+    font-weight: 900;
+    line-height: 1.15;
+    margin-bottom: 16px;
+    animation: fadeDown 0.7s ease;
+  }
+  .hero-title .line1 { color: var(--text); display:block; }
+  .hero-title .line2 {
+    display: block;
+    background: linear-gradient(135deg, var(--gold), var(--gold2), var(--green));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .hero-sub {
+    color: var(--muted); font-size: 15px; max-width: 500px;
+    margin: 0 auto 28px; line-height: 1.7;
+    animation: fadeDown 0.8s ease;
+  }
+  .hero-stats {
+    display: flex; justify-content: center; gap: 24px; flex-wrap:wrap;
+    margin-bottom: 36px; animation: fadeDown 0.9s ease;
+  }
+  .stat-chip {
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 12px; padding: 10px 18px; text-align:center;
+    min-width: 80px;
+  }
+  .stat-chip .val { font-family:'Cinzel',serif; color:var(--gold); font-size:20px; font-weight:700; display:block; }
+  .stat-chip .lbl { color:var(--muted); font-size:11px; letter-spacing:1px; }
+
+  @keyframes fadeDown { from{opacity:0;transform:translateY(-20px);} to{opacity:1;transform:none;} }
+
+  /* === SEARCH BAR === */
+  .search-wrap { max-width: 420px; margin: 0 auto 40px; position:relative; animation: fadeDown 1s ease; }
+  .search-wrap input {
+    width:100%; padding: 14px 48px 14px 20px;
+    background: var(--bg3); border: 1.5px solid var(--border);
+    border-radius: 50px; color: var(--text); font-size: 15px;
+    font-family: 'DM Sans', sans-serif; outline:none;
+    transition: border-color 0.2s;
+  }
+  .search-wrap input:focus { border-color: #22c55e66; }
+  .search-wrap input::placeholder { color: var(--muted); }
+  .search-wrap .si { position:absolute; right:18px; top:50%; transform:translateY(-50%); color:var(--muted); font-size:18px; pointer-events:none; }
+
+  /* === SECTION TITLE === */
+  .section { position:relative; z-index:1; padding: 0 16px 50px; max-width: 900px; margin:0 auto; }
+  .sec-head { display:flex; align-items:center; gap:10px; margin-bottom:20px; }
+  .sec-line { flex:1; height:1px; background: linear-gradient(90deg, var(--border), transparent); }
+  .sec-title { font-family:'Cinzel',serif; font-size:13px; color:var(--gold); letter-spacing:3px; text-transform:uppercase; white-space:nowrap; }
+
+  /* === GRID === */
+  .grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); gap:12px; }
+
+  /* === CARD === */
+  .card {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 16px;
+    padding: 18px 14px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+    text-decoration: none;
+    display: block;
+  }
+  .card::before {
+    content:''; position:absolute; inset:0;
+    background: radial-gradient(circle at 50% 0%, var(--accent-color, #22c55e)15 0%, transparent 70%);
+    opacity:0; transition: opacity 0.3s;
+    pointer-events:none;
+  }
+  .card:hover::before { opacity:1; }
+  .card:hover { transform: translateY(-4px) scale(1.02); border-color: var(--accent-color, #22c55e); box-shadow: 0 12px 40px var(--accent-color, #22c55e)22; }
+
+  .card-icon { font-size:30px; margin-bottom:10px; display:block; }
+  .card-title { font-size:13px; font-weight:700; color:var(--text); line-height:1.4; margin-bottom:6px; }
+  .card-count { font-size:11px; color:var(--muted); }
+
+  /* LOCKED CARD */
+  .card.locked { cursor:default; opacity:0.55; }
+  .card.locked:hover { transform:none; border-color:var(--border); box-shadow:none; }
+  .card.locked::before { display:none; }
+  .lock-tag {
+    position:absolute; top:8px; right:8px;
+    background:#1e293b; border-radius:20px;
+    padding:2px 8px; font-size:10px; color:var(--muted);
+    letter-spacing:1px;
+  }
+
+  /* LIVE CARD */
+  .card.live {
+    border-color: #22c55e66;
+    background: linear-gradient(135deg, #0d2010, #0d1520);
+    cursor: pointer; opacity:1;
+  }
+  .card.live:hover { transform:translateY(-5px) scale(1.03); border-color:#22c55e; box-shadow:0 16px 50px #22c55e33; }
+  .live-tag {
+    position:absolute; top:8px; right:8px;
+    background: #16a34a; border-radius:20px;
+    padding:2px 8px; font-size:10px; color:#fff;
+    font-weight:700; letter-spacing:1px;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100%{box-shadow:0 0 0 0 #22c55e44;} 50%{box-shadow:0 0 0 6px transparent;} }
+
+  /* === FEATURED CARD === */
+  .featured-card {
+    background: linear-gradient(135deg, #0d2515, #0f1e0a, #0d1520);
+    border: 2px solid #22c55e;
+    border-radius: 20px;
+    padding: 24px 20px;
+    margin-bottom: 32px;
+    position: relative;
+    overflow: hidden;
+    text-decoration: none;
+    display: block;
+    transition: all 0.3s;
+  }
+  .featured-card::before {
+    content:''; position:absolute; top:-40px; right:-40px;
+    width:150px; height:150px;
+    background: radial-gradient(circle, #22c55e22 0%, transparent 70%);
+    animation: breathe 3s ease-in-out infinite;
+  }
+  @keyframes breathe { 0%,100%{transform:scale(1);} 50%{transform:scale(1.2);} }
+  .featured-card:hover { transform:translateY(-4px); box-shadow:0 20px 60px #22c55e33; }
+  .featured-tag {
+    display:inline-block; background:#22c55e; color:#000;
+    font-size:11px; font-weight:700; letter-spacing:2px;
+    padding:4px 12px; border-radius:20px; margin-bottom:14px;
+  }
+  .featured-title { font-family:'Cinzel',serif; font-size:22px; color:#fff; margin-bottom:6px; }
+  .featured-sub { color:#86efac; font-size:13px; margin-bottom:16px; line-height:1.6; }
+  .featured-meta { display:flex; gap:12px; flex-wrap:wrap; }
+  .meta-chip {
+    background:#0d2a12; border:1px solid #16a34a44;
+    color:#4ade80; font-size:12px; padding:4px 12px; border-radius:20px;
+  }
+  .featured-arrow {
+    position:absolute; right:20px; top:50%; transform:translateY(-50%);
+    font-size:28px; color:#22c55e; opacity:0.6;
+  }
+
+  /* === CATEGORIES section colors === */
+  .c-green { --accent-color: #22c55e; }
+  .c-blue  { --accent-color: #3b82f6; }
+  .c-amber { --accent-color: #f59e0b; }
+  .c-red   { --accent-color: #ef4444; }
+  .c-purple{ --accent-color: #a855f7; }
+  .c-pink  { --accent-color: #ec4899; }
+  .c-cyan  { --accent-color: #06b6d4; }
+  .c-orange{ --accent-color: #f97316; }
+  .c-teal  { --accent-color: #14b8a6; }
+  .c-indigo{ --accent-color: #6366f1; }
+
+  /* === FOOTER === */
+  footer {
+    position:relative; z-index:1;
+    text-align:center; padding:30px 20px;
+    border-top:1px solid var(--border);
+    color:var(--muted); font-size:13px;
+  }
+  footer span { color:var(--gold); }
+
+  /* === PROGRESS BANNER === */
+  .prog-banner {
+    background: linear-gradient(135deg, #0d1520, #111827);
+    border: 1px solid var(--border); border-radius: 16px;
+    padding: 16px 20px; margin-bottom: 32px;
+    display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+  }
+  .prog-icon { font-size:24px; }
+  .prog-text { flex:1; }
+  .prog-text p { color:var(--muted); font-size:12px; margin-top:4px; }
+  .prog-text strong { color:var(--text); font-size:14px; }
+  .prog-bar-wrap { width:100%; background:#1e293b; border-radius:8px; height:6px; margin-top:8px; overflow:hidden; }
+  .prog-bar { height:100%; background:linear-gradient(90deg,#22c55e,#f59e0b); border-radius:8px; width:4.5%; transition:width 1s; }
+  .prog-label { color:var(--gold); font-size:12px; white-space:nowrap; }
+
+  /* SCROLL TOP */
+  .scroll-top {
+    position:fixed; bottom:24px; right:20px; z-index:200;
+    width:44px; height:44px; border-radius:50%;
+    background:#16a34a; border:none; cursor:pointer;
+    color:#fff; font-size:18px;
+    box-shadow:0 4px 20px #22c55e44;
+    display:flex; align-items:center; justify-content:center;
+    transition:all 0.2s;
+  }
+  .scroll-top:hover { transform:scale(1.1); background:#22c55e; }
+
+  @media(max-width:400px) {
+    .grid { grid-template-columns: repeat(2, 1fr); }
+    .hero { padding:40px 16px 30px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Animated particles -->
+<div class="bg-stars"></div>
+<div class="particle" style="width:3px;height:3px;background:#22c55e;left:15%;animation-duration:18s;animation-delay:0s;"></div>
+<div class="particle" style="width:2px;height:2px;background:#c9a84c;left:35%;animation-duration:25s;animation-delay:5s;"></div>
+<div class="particle" style="width:4px;height:4px;background:#3b82f6;left:60%;animation-duration:20s;animation-delay:2s;"></div>
+<div class="particle" style="width:2px;height:2px;background:#a855f7;left:80%;animation-duration:22s;animation-delay:8s;"></div>
+<div class="particle" style="width:3px;height:3px;background:#22c55e;left:50%;animation-duration:15s;animation-delay:12s;"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">UPSC <span>MCQ</span> Kingdom</div>
+  <div class="nav-badge">🏆 Free Forever</div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">📚 Complete UPSC · PCS · State PSC Preparation</div>
+  <h1 class="hero-title">
+    <span class="line1">Master Every Topic.</span>
+    <span class="line2">Crack Every Exam.</span>
+  </h1>
+  <p class="hero-sub">2000+ MCQs across all UPSC subjects. Practice, learn, and revise — all in one place. Free forever.</p>
+
+  <div class="hero-stats">
+    <div class="stat-chip"><span class="val">2000+</span><span class="lbl">Questions</span></div>
+    <div class="stat-chip"><span class="val">22</span><span class="lbl">Subjects</span></div>
+    <div class="stat-chip"><span class="val">Free</span><span class="lbl">Forever</span></div>
+    <div class="stat-chip"><span class="val">UPSC</span><span class="lbl">Pattern</span></div>
+  </div>
+
+  <!-- Search -->
+  <div class="search-wrap">
+    <input type="text" placeholder="Search subject or topic..." id="searchInput" oninput="filterCards()"/>
+    <span class="si">🔍</span>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div style="position:relative;z-index:1;">
+<div style="max-width:900px;margin:0 auto;padding:0 16px;">
+
+  <!-- PROGRESS BANNER -->
+  <div class="prog-banner">
+    <div class="prog-icon">🚀</div>
+    <div class="prog-text">
+      <strong>1 of 22 subjects ready — more coming soon!</strong>
+      <p>New quizzes are added regularly. Bookmark this page.</p>
+      <div class="prog-bar-wrap"><div class="prog-bar" id="progBar"></div></div>
+    </div>
+    <div class="prog-label">4.5% complete</div>
+  </div>
+
+  <!-- FEATURED: ANIMAL GK -->
+  <a class="featured-card" href="animal-gk/index.html">
+    <div class="featured-tag">✅ LIVE NOW</div>
+    <div class="featured-title">🦁 Animal General Knowledge</div>
+    <div class="featured-sub">205 questions covering fastest, largest, national animals, Indian wildlife, marine life, birds, insects, behavior, body & biology and more.</div>
+    <div class="featured-meta">
+      <span class="meta-chip">📝 205 Questions</span>
+      <span class="meta-chip">🗂️ 15 Categories</span>
+      <span class="meta-chip">⭐ UPSC Level</span>
+      <span class="meta-chip">⚡ Instant Feedback</span>
+    </div>
+    <div class="featured-arrow">→</div>
+  </a>
+
+</div>
+
+<!-- HISTORY SECTION -->
+<div class="section">
+  <div class="sec-head"><div class="sec-line"></div><div class="sec-title">⚔️ History</div><div class="sec-line"></div></div>
+  <div class="grid" id="gridHistory">
+
+    <div class="card locked c-amber" data-name="ancient history">
+      <div class="lock-tag">Soon</div>
+      <span class="card-icon">🏛️</span>
+      <div class="card-title">Ancient History</div>
+      <div class="card-count">Harappa · Vedic · Maurya · Gupta</div>
+    </div>
+
+    <div class="card locked c-amber" data-name="medieval history">
+      <div class="lock-tag">Soon</div>
+      <span class="card-icon">🕌</span>
+      <div class="card-title">Medieval History</div>
+      <div class="card-count">Sultanate · Mughal · Vijayanagara</div>
+    </div>
+
+    <div class="card locked c-amber" data-name="modern history">
+      <div class="lock-tag">Soon</div>
+      <span class="card-icon">🇬🇧</span>
+      <div class="card-title">Modern History</div>
+      <div class="card-count">British · Freedom Struggle · 1857</div>
+    </div>
+
+    <div class="card locked c-amber" data-name="post independence india">
+      <div class="lock-tag">Soon</div>
+      <span class="card-icon">🇮🇳</span>
+      <div class="card-title">Post Independence</div>
+      <div class="card-count">1947 onwards · Nehru · Emergency</div>
+    </div>
+
+    <div class="card locked c-orange" data-name="world history">
+      <div class="lock-tag">Soon</div>
+      <span class="card-icon">🌍</span>
+      <div class="card-title">World History</div>
+      <div class="card-count">WW1 · WW2 · Cold War · Revolution</div>
+    </div>
+
+    <div class="card locked c-red" data-name="art culture india">
+      <div class="lock-tag">Soon</div>
+      <span class="card-icon">🎨</span>
+      <div class="card-title">Art & Culture</div>
+      <div class="card-count">Dance · Music · Temples · Festivals</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- GEOGRAPHY SECTION -->
+<div class="section">
+  <div class="sec-head"><div class="sec-line"></div><div class="sec-title">🗺️ Geography</div><div class="sec-line"></div></div>
+  <div class="grid">
+
+    <div class="card locked c-blue" data-name="indian geography">
+      <div class="lock-tag">Soon</div>
+      <span class="card-icon">🏔️</span>
+      <div class="card-title">Indian Geography</div>
+      <div class="card-count">Rivers · Mountains · Soil · Climate</div>
+    </div>
+
+    <div class="card locked c-cyan" data-name="world geography">
+      <div class="lock-tag">Soon</div>
+      <span class="card-icon">🌐</span>
+      <div class="card-title">World Geography</div>
+      <div class="card-count">Continents · Oceans · Countries</div>
+    </div>
+
+    <div class="card locked c-teal" data-name="environment ecology">
+      <div class="lock-tag">Soon</div>
+      <span class="card-icon">🌿</span>
+      <div class="card-title">Environment & Ecology</div>
+      <div class="card-count">Biodiversity · Climate · IUCN</div>
+    </div>
+
+    <div class="card locked c-green" data-name="physical geography">
+      <div class="lock-tag">Soon</div>
+      <span class="card-icon">⛰️</span>
+      <div class="card-title">Physical Geography</div>
+      <div class="card-count">Landforms · Earthquakes · Volcanoes</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- POLITY & ECONOMY SECTION -->
+<div class="section">
+  <div class="sec-head"><div class="sec-line"></div><div class="sec-title">⚖️ Polity & Economy</div><div class="sec-line"></div></div>
+  <div class="grid">
+
+    <div class="card locked c-indigo" data-name="polity constitution">
+      <div class="lock-tag">Soon</div>
+      <span class="card-icon">📜</span>
+      <div class="card-title">Polity & Constitution</div>
+      <div class="card-count">Articles · Amendments · Rights</div>
+    </div>
+
+    <div class="card locked c-purple" data-name="economy">
+      <div class="lock-tag">Soon</div>
+      <span class="card-icon">💹</span>
+      <div class="card-title">Economy</div>
+      <div class="card-count">GDP · Banking · Budget · RBI</div>
+    </div>
+
+    <div class="card locked c-indigo" data-name="governance">
+      <div class="lock-tag">Soon</div>
+      <span class="card-icon">🏛️</span>
+      <div class="card-title">Governance</div>
+      <div class="card-count">Parliament · Judiciary · Schemes</div>
+    </div>
+
+    <div class="card locked c-purple" data-name="international relations">
+      <div class="lock-tag">Soon</div>
+      <span class="card-icon">🤝</span>
+      <div class="card-title">International Relations</div>
+      <div class="card-count">UN · Treaties · Diplomacy</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- SCIENCE SECTION -->
+<div class="section">
+  <div class="sec-head"><div class="sec-line"></div><div class="sec-title">🔬 Science & Technology</div><div class="sec-line"></div></div>
+  <div class="grid">
+
+    <div class="card locked c-cyan" data-name="science technology">
+      <div class="lock-tag">Soon</div>
+      <span class="card-icon">🚀</span>
+      <div class="card-title">Science & Technology</div>
+      <div class="card-count">Space · Defence · AI · Biotech</div>
+    </div>
+
+    <div class="card locked c-blue" data-name="physics chemistry biology">
+      <div class="lock-tag">Soon</div>
+      <span class="card-icon">⚗️</span>
+      <div class="card-title">General Science</div>
+      <div class="card-count">Physics · Chemistry · Biology</div>
+    </div>
+
+    <div class="card locked c-teal" data-name="computer it technology">
+      <div class="lock-tag">Soon</div>
+      <span class="card-icon">💻</span>
+      <div class="card-title">Computers & IT</div>
+      <div class="card-count">Internet · Coding · Cybersecurity</div>
+    </div>
+
+    <div class="card locked c-green" data-name="space isro nasa">
+      <div class="lock-tag">Soon</div>
+      <span class="card-icon">🛸</span>
+      <div class="card-title">Space & ISRO</div>
+      <div class="card-count">Missions · Satellites · Chandrayaan</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- APTITUDE SECTION -->
+<div class="section">
+  <div class="sec-head"><div class="sec-line"></div><div class="sec-title">🧮 CSAT & Aptitude</div><div class="sec-line"></div></div>
+  <div class="grid">
+
+    <div class="card locked c-pink" data-name="csat aptitude">
+      <div class="lock-tag">Soon</div>
+      <span class="card-icon">🧮</span>
+      <div class="card-title">CSAT — Aptitude</div>
+      <div class="card-count">Maths · Reasoning · Comprehension</div>
+    </div>
+
+    <div class="card locked c-pink" data-name="logical reasoning">
+      <div class="lock-tag">Soon</div>
+      <span class="card-icon">🧩</span>
+      <div class="card-title">Logical Reasoning</div>
+      <div class="card-count">Syllogism · Puzzles · Series</div>
+    </div>
+
+    <div class="card locked c-red" data-name="data interpretation">
+      <div class="lock-tag">Soon</div>
+      <span class="card-icon">📊</span>
+      <div class="card-title">Data Interpretation</div>
+      <div class="card-count">Graphs · Tables · Charts</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- GENERAL KNOWLEDGE SECTION -->
+<div class="section">
+  <div class="sec-head"><div class="sec-line"></div><div class="sec-title">🌟 General Knowledge</div><div class="sec-line"></div></div>
+  <div class="grid">
+
+    <!-- LIVE ANIMAL GK CARD in GK section too -->
+    <a class="card live c-green" href="animal-gk/index.html" data-name="animal gk wildlife">
+      <div class="live-tag">LIVE</div>
+      <span class="card-icon">🦁</span>
+      <div class="card-title">Animal GK</div>
+      <div class="card-count">205 Questions · 15 Topics</div>
+    </a>
+
+    <div class="card locked c-blue" data-name="india gk general knowledge">
+      <div class="lock-tag">Soon</div>
+      <span class="card-icon">🇮🇳</span>
+      <div class="card-title">India GK</div>
+      <div class="card-count">States · Capitals · Records</div>
+    </div>
+
+    <div class="card locked c-cyan" data-name="world gk general knowledge">
+      <div class="lock-tag">Soon</div>
+      <span class="card-icon">🌍</span>
+      <div class="card-title">World GK</div>
+      <div class="card-count">Countries · Capitals · Leaders</div>
+    </div>
+
+    <div class="card locked c-amber" data-name="common general knowledge">
+      <div class="lock-tag">Soon</div>
+      <span class="card-icon">📚</span>
+      <div class="card-title">Common GK</div>
+      <div class="card-count">Mixed · All Categories · Basics</div>
+    </div>
+
+    <div class="card locked c-orange" data-name="sports gk cricket football">
+      <div class="lock-tag">Soon</div>
+      <span class="card-icon">🏏</span>
+      <div class="card-title">Sports GK</div>
+      <div class="card-count">Cricket · Olympics · Awards</div>
+    </div>
+
+    <div class="card locked c-purple" data-name="current affairs 2024 2025">
+      <div class="lock-tag">Soon</div>
+      <span class="card-icon">📰</span>
+      <div class="card-title">Current Affairs</div>
+      <div class="card-count">Monthly · Weekly · Events</div>
+    </div>
+
+    <div class="card locked c-pink" data-name="awards honours nobel">
+      <div class="lock-tag">Soon</div>
+      <span class="card-icon">🏆</span>
+      <div class="card-title">Awards & Honours</div>
+      <div class="card-count">Nobel · Padma · Bharat Ratna</div>
+    </div>
+
+    <div class="card locked c-teal" data-name="books authors literature">
+      <div class="lock-tag">Soon</div>
+      <span class="card-icon">📖</span>
+      <div class="card-title">Books & Authors</div>
+      <div class="card-count">Famous Books · Indian Authors</div>
+    </div>
+
+    <div class="card locked c-indigo" data-name="government schemes india">
+      <div class="lock-tag">Soon</div>
+      <span class="card-icon">📋</span>
+      <div class="card-title">Govt. Schemes</div>
+      <div class="card-count">Yojana · Missions · Programmes</div>
+    </div>
+
+    <div class="card locked c-red" data-name="defence military india">
+      <div class="lock-tag">Soon</div>
+      <span class="card-icon">🪖</span>
+      <div class="card-title">Defence & Military</div>
+      <div class="card-count">Army · Navy · Air Force · DRDO</div>
+    </div>
+
+    <div class="card locked c-green" data-name="static gk facts">
+      <div class="lock-tag">Soon</div>
+      <span class="card-icon">🗃️</span>
+      <div class="card-title">Static GK</div>
+      <div class="card-count">Firsts · Largest · Borders</div>
+    </div>
+
+    <div class="card locked c-amber" data-name="miscellaneous gk mixed">
+      <div class="lock-tag">Soon</div>
+      <span class="card-icon">🎯</span>
+      <div class="card-title">Miscellaneous</div>
+      <div class="card-count">Mixed Bag · Surprise Topics</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- COMING SOON BANNER -->
+<div style="max-width:900px;margin:0 auto 50px;padding:0 16px;">
+  <div style="background:linear-gradient(135deg,#0d1520,#0d1a0d);border:1px solid #1e3a2a;border-radius:20px;padding:28px 24px;text-align:center;">
+    <div style="font-size:32px;margin-bottom:12px;">⚡</div>
+    <h3 style="font-family:'Cinzel',serif;color:var(--gold);font-size:18px;margin-bottom:8px;">More Quizzes Coming Every Week</h3>
+    <p style="color:var(--muted);font-size:14px;line-height:1.7;max-width:400px;margin:0 auto 18px;">Polity, Economy, History, Geography and Science quizzes are being built. Bookmark this page and check back regularly.</p>
+    <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
+      <span style="background:#16a34a22;border:1px solid #16a34a55;color:#4ade80;padding:6px 14px;border-radius:20px;font-size:12px;">📜 Polity — Next</span>
+      <span style="background:#1e293b;border:1px solid #334155;color:var(--muted);padding:6px 14px;border-radius:20px;font-size:12px;">📜 History</span>
+      <span style="background:#1e293b;border:1px solid #334155;color:var(--muted);padding:6px 14px;border-radius:20px;font-size:12px;">🌍 Geography</span>
+      <span style="background:#1e293b;border:1px solid #334155;color:var(--muted);padding:6px 14px;border-radius:20px;font-size:12px;">💹 Economy</span>
+    </div>
+  </div>
+</div>
+
+</div><!-- end z-index wrapper -->
+
+<!-- FOOTER -->
+<footer>
+  <p>Built for serious UPSC aspirants · <span>UPSC MCQ Kingdom</span> · Free Forever 🇮🇳</p>
+  <p style="margin-top:8px;font-size:12px;">Practice daily · Stay consistent · Crack the exam 💪</p>
+</footer>
+
+<!-- Scroll to top -->
+<button class="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+  function filterCards() {
+    const raw = document.getElementById('searchInput').value.toLowerCase().trim();
+
+    // Show everything if empty
+    if (!raw) {
+      document.querySelectorAll('.card[data-name]').forEach(c => c.style.display = '');
+      document.querySelectorAll('.featured-card').forEach(c => c.style.display = '');
+      document.querySelectorAll('.section').forEach(s => s.style.display = '');
+      document.querySelector('.prog-banner') && (document.querySelector('.prog-banner').style.display = '');
+      return;
+    }
+
+    const terms = raw.split(' ').filter(Boolean); // support multi-word
+
+    // Helper: does text match ALL terms (prefix or contains)
+    function matches(text) {
+      return terms.every(term => {
+        const words = text.split(/[\s\-·]+/);
+        // prefix match on any word in the text
+        return words.some(w => w.startsWith(term)) || text.includes(term);
+      });
+    }
+
+    let anyVisible = false;
+
+    // Filter regular cards
+    document.querySelectorAll('.card[data-name]').forEach(card => {
+      const name  = card.getAttribute('data-name').toLowerCase();
+      const title = (card.querySelector('.card-title')?.textContent || '').toLowerCase();
+      const count = (card.querySelector('.card-count')?.textContent || '').toLowerCase();
+      const combined = name + ' ' + title + ' ' + count;
+      const show = matches(combined);
+      card.style.display = show ? '' : 'none';
+      if (show) anyVisible = true;
+    });
+
+    // Filter featured card
+    document.querySelectorAll('.featured-card').forEach(fc => {
+      const title = (fc.querySelector('.featured-title')?.textContent || '').toLowerCase();
+      const sub   = (fc.querySelector('.featured-sub')?.textContent || '').toLowerCase();
+      const combined = 'animal gk wildlife ' + title + ' ' + sub;
+      fc.style.display = matches(combined) ? '' : 'none';
+    });
+
+    // Hide sections that have NO visible cards
+    document.querySelectorAll('.section').forEach(section => {
+      const visibleCards = [...section.querySelectorAll('.card[data-name]')]
+        .filter(c => c.style.display !== 'none');
+      section.style.display = visibleCards.length > 0 ? '' : 'none';
+    });
+
+    // Hide progress banner during search
+    const banner = document.querySelector('.prog-banner');
+    if (banner) banner.style.display = 'none';
+  }
+
+  // Animate progress bar on load
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      document.getElementById('progBar').style.width = '4.5%';
+    }, 500);
+  });
+</script>
+</body>
+</html>
